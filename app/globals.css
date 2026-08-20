@@ -318,7 +318,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .guide-progress small { color: #82766c; font-size: 6px; }
 .ai-guide-stage { height: 225px; padding: 36px 18px 0; display: flex; align-items: flex-start; justify-content: space-between; position: relative; }
 .ai-message { position: relative; z-index: 2; width: min(72%, 292px); margin-top: 4px; padding: 12px 14px; border-radius: 8px 8px 2px 8px; background: #fff; color: var(--ink); box-shadow: 0 10px 30px rgba(0,0,0,.18); }
-.ai-message::after { content: ""; position: absolute; right: -7px; bottom: 0; border: 8px solid transparent; border-bottom-color: #fff; transform: rotate(20deg); }
+.ai-message::after { content: none; }
 .ai-message small { color: var(--gold); font-size: 7px; letter-spacing: .12em; }
 .ai-message p { margin: 7px 0 0; font-size: 10px; line-height: 1.55; word-break: keep-all; }
 .ai-guide-stage .guide-character { position: absolute; z-index: 1; right: 4px; bottom: -7px; width: 126px; }
@@ -662,7 +662,7 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .signal-sheet .next-destination-card small { color: var(--figma-gold); font-size: 13px; }
 .signal-sheet .next-destination-card strong { margin: 6px 0 12px; font-family: inherit; font-size: 20px; }
 .signal-sheet .next-destination-card span { padding-top: 12px; border-top: 2px solid #7e5f39; color: rgba(255,255,255,.7); font-size: 15px; line-height: 23px; }
-.signal-sheet .next-step-button { margin-top: 65px; border: 0; background: transparent; color: #fff; font-size: 20px; }
+.signal-sheet .next-step-button { margin-top: 65px; border: 0; background: transparent; color: #fff; font-size: 20px; font-weight: 400; }
 
 /* 41 */
 .tag-find-screen { padding: 58px 15px 18px; animation: prototype-smart-in .5s cubic-bezier(.42,0,1,1) both; }
@@ -748,7 +748,7 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .passport-offer-guide { min-height: 218px; padding-top: 70px; }
 .passport-offer-guide .ai-message { width: 276px; margin: 0; }
 .passport-offer-guide .guide-character { right: -1px; bottom: 4px; width: 132px; }
-.figma-passport-ticket { width: 100%; min-height: 0; aspect-ratio: 372 / 228; padding: 0; position: relative; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.figma-passport-ticket { width: 100%; max-width: 372px; height: auto; min-height: 0; aspect-ratio: 372 / 228; margin-inline: auto; padding: 0; position: relative; flex: 0 0 auto; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .passport-offer-card.figma-passport-ticket { margin-top: 14px; }
 .figma-passport-ticket::before, .figma-passport-ticket::after { content: none; }
 .figma-ticket-layer { position: absolute; display: block; }
@@ -871,9 +871,10 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .saved-coupon small { color: #666; font-size: 13px; }
 .saved-coupon strong { display: block; font-size: 20px; }
 .saved-coupon p { margin: 2px 0 0; color: #777; font-size: 11px; }
-.coupon-download { height: 72px; border-left: 1px solid #ddd; display: grid; place-items: center; }
-.coupon-download svg { width: 32px; color: #666; }
-.coupon-download small { font-size: 11px; }
+.coupon-download { height: 72px; border-left: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
+.coupon-download-icon { position: relative; width: 30px; height: 35.762px; flex: 0 0 35.762px; }
+.coupon-download-icon img { position: absolute; left: -1px; top: 0; width: 32px; height: 36.762px; }
+.coupon-download small { color: #5f5f59; font-size: 11px; line-height: 16px; font-weight: 400; letter-spacing: .1px; white-space: nowrap; }
 .passport-products-title { margin: 40px 0 14px; display: flex; align-items: center; justify-content: space-between; }
 .passport-products-title h2 { margin: 0; font-size: 15px; }
 .passport-products-title button { border: 0; background: transparent; color: #666; display: flex; align-items: center; font-size: 13px; }
@@ -901,6 +902,10 @@ body { min-height: 100svh; overflow-x: hidden; }
 .flight-line { gap: 3px; }
 .flight-line b { width: 23px; height: 22px; padding: 0; display: grid; place-items: center; }
 .flight-line b svg { width: 23px; height: 22px; display: block; }
+.flight-line--progress { position: relative; display: block; height: 22px; }
+.flight-line--progress > i:first-child { position: absolute; left: 0; right: 0; top: 50%; height: 1px; transform: translateY(-50%); }
+.flight-line--progress > i:last-child { display: none; }
+.flight-line--progress > b { position: absolute; z-index: 1; top: 0; transform: translateX(-50%); transition: left .45s cubic-bezier(.22,.8,.3,1); }
 
 .welcome-screen .guide-character--presenter { width: 120px; }
 .ai-guide-stage .guide-character--pointer { width: 150px; right: -5px; }
@@ -954,7 +959,7 @@ body { min-height: 100svh; overflow-x: hidden; }
 @media (max-height: 780px) {
   .welcome-copy { margin-bottom: 28px; }
   .welcome-passport-ticket { width: 100%; }
-  .welcome-screen .guide-bubble { height: 125px; }
+  .welcome-screen .guide-bubble { height: 154px; min-height: 154px; }
   .latest-guide-screen .ai-guide-stage { height: 180px; margin-top: 12px; padding-top: 18px; }
   .latest-guide-screen .question-context { margin: 20px 0 18px; }
   .latest-guide-screen .guide-question { margin-bottom: 18px; }
@@ -964,7 +969,6 @@ body { min-height: 100svh; overflow-x: hidden; }
   .tag-find-content { padding-top: 45px; }
   .tag-find-visual, .tag-find-visual img { width: 170px; height: 170px; }
   .passport-offer-guide { min-height: 165px; padding-top: 28px; }
-  .passport-offer-card { min-height: 230px; }
   .passport-offer-actions { margin-top: 18px; gap: 9px; }
   .boarding-screen .boarding-kicker { margin-bottom: 24px; }
   .boarding-screen > h1 { margin-bottom: 28px; }
@@ -979,12 +983,11 @@ body { min-height: 100svh; overflow-x: hidden; }
   .ai-message { width: min(76%, 270px); }
   .guide-character { transform: scale(.9); transform-origin: right bottom; }
   .voice-answer { width: 100%; margin-left: 0; margin-right: 0; }
-  .passport-offer-card { min-height: 220px; }
   .saved-coupon { padding-inline: 12px; grid-template-columns: 36px 1fr 74px; }
 }
 
 /* Keep Amy in one predictable stage slot and reserve copy space so speech bubbles never cover her. */
-.guide-stage { position: relative; }
+.guide-stage { position: relative; min-height: 154px; }
 .guide-stage .guide-copy {
   position: relative;
   z-index: 2;
@@ -995,6 +998,7 @@ body { min-height: 100svh; overflow-x: hidden; }
   margin-left: 0;
   margin-right: auto;
   box-sizing: border-box;
+  border-radius: 10px;
 }
 .guide-stage .guide-character,
 .guide-stage .guide-character--pointer,

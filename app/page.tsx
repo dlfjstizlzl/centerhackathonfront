@@ -4,7 +4,6 @@ import Image from "next/image";
 import {
   ArrowLeft,
   ArrowRight,
-  BookmarkCheck,
   Check,
   ChevronRight,
   Compass,
@@ -187,9 +186,13 @@ export default function HomePage() {
   }, [phase, journeyView, sessionId, activeSpotIndex, answers, stamps, tagged, taggedProductId, taggedProductDetails, productReason, tagConnected, portraitSaved, styleResult, souvenir, entryMethod, souvenirSaved, accountLinked, hydrated]);
 
   const activeSpot = spots[activeSpotIndex];
-  const activeQuestion = activeSpot?.questions
-    .sort((a, b) => a.sequence - b.sequence)
-    .find((question) => answers[question.id] === undefined) ?? activeSpot?.questions[0];
+  const activeQuestion = activeSpot
+    ? [...activeSpot.questions].sort((a, b) => a.sequence - b.sequence)
+      .find((question) => answers[question.id] === undefined) ?? activeSpot.questions[0]
+    : undefined;
+  const orderedQuestions = spots.flatMap((spot) => [...spot.questions].sort((a, b) => a.sequence - b.sequence));
+  const totalQuestionCount = orderedQuestions.length;
+  const activeQuestionNumber = Math.max(1, orderedQuestions.findIndex((question) => question.id === activeQuestion?.id) + 1);
 
   const requiredSpots = useMemo(() => spots.filter((spot) => spot.required), [spots]);
   const requiredComplete = requiredSpots.length > 0 && requiredSpots.every((spot) => stamps.includes(spot.id));
@@ -356,7 +359,7 @@ export default function HomePage() {
         {phase === "welcome" && <Welcome connected={enteredByNfc} onStart={startJourney} onQr={startJourney} />}
         {phase === "consent" && <Consent entryMethod={entryMethod} required={journeyConsent} portrait={portraitConsent} onRequired={setJourneyConsent} onPortrait={setPortraitConsent} onBack={() => setPhase("welcome")} onStart={startJourney} />}
         {phase === "journey" && activeSpot && activeQuestion && journeyView === "question" && (
-          <QuestionScreen key={activeQuestion.id} spot={activeSpot} question={activeQuestion} answeredCount={Object.keys(answers).length} totalQuestions={spots.reduce((count, spot) => count + spot.questions.length, 0)} selected={answers[activeQuestion.id]} onAnswer={chooseAnswer} />
+          <QuestionScreen key={activeQuestion.id} spot={activeSpot} question={activeQuestion} questionNumber={activeQuestionNumber} totalQuestions={totalQuestionCount} selected={answers[activeQuestion.id]} onAnswer={chooseAnswer} />
         )}
         {phase === "journey" && journeyView === "checkpoint" && <NextStepScreen title="Origin Gate" message="오늘의 무드가 Passport에 기록됐어요. Origin Gate부터 여정을 시작해볼게요." button="Origin Gate로 이동" onContinue={() => openSpot(0)} />}
         {phase === "journey" && journeyView === "tag" && <TagYourFind onContinue={() => setJourneyView("map")} onTag={tagProduct} />}
@@ -400,9 +403,9 @@ function PassportTicket({ className = "", priority = false }: { className?: stri
   return (
     <div className={`figma-passport-ticket ${className}`.trim()}>
       <span className="figma-ticket-layer figma-ticket-main"><Image src="/images/figma-ticket-main.svg" alt="" fill sizes="372px" priority={priority} /></span>
-      <span className="figma-ticket-layer figma-ticket-side"><Image src="/images/figma-ticket-side.svg" alt="" fill sizes="101px" /></span>
-      <span className="figma-ticket-layer figma-ticket-divider"><Image src="/images/figma-ticket-divider.svg" alt="" fill sizes="1px" /></span>
-      <span className="figma-ticket-layer figma-ticket-emblem"><Image src="/images/figma-ticket-emblem.svg" alt="" fill sizes="47px" /></span>
+      <span className="figma-ticket-layer figma-ticket-side"><Image src="/images/figma-ticket-side.svg" alt="" fill sizes="101px" priority={priority} /></span>
+      <span className="figma-ticket-layer figma-ticket-divider"><Image src="/images/figma-ticket-divider.svg" alt="" fill sizes="1px" priority={priority} /></span>
+      <span className="figma-ticket-layer figma-ticket-emblem"><Image src="/images/figma-ticket-emblem.svg" alt="" fill sizes="47px" priority={priority} /></span>
       <small>STYLE JOURNEY<br />PASSPORT</small>
       <div className="passport-offer-name">GUEST · JIYOON</div>
       <div className="passport-offer-destination">DESTINATION · CURATED BY YOU</div>
@@ -447,25 +450,27 @@ function Consent({ entryMethod, required, portrait, onRequired, onPortrait, onBa
   );
 }
 
-function QuestionScreen({ spot, question, answeredCount, totalQuestions, selected, onAnswer }: {
+function QuestionScreen({ spot, question, questionNumber, totalQuestions, selected, onAnswer }: {
   spot: JourneySpot;
   question: JourneySpot["questions"][number];
-  answeredCount: number;
+  questionNumber: number;
   totalQuestions: number;
   selected?: number | null;
   onAnswer: (optionId?: number, answerText?: string) => void;
 }) {
   const guide = guideCopy(question.code, spot.name);
   const [draftAnswer, setDraftAnswer] = useState("");
+  const safeTotalQuestions = Math.max(totalQuestions, 1);
+  const questionProgress = safeTotalQuestions === 1 ? 100 : ((questionNumber - 1) / (safeTotalQuestions - 1)) * 100;
   return (
     <div className="screen question-screen latest-guide-screen">
       <Header title="AI Guide" light />
-      <div className="guide-progress"><span>{guide.eyebrow}</span><div><i style={{ width: `${Math.max(8, ((answeredCount + 1) / Math.max(totalQuestions, 1)) * 100)}%` }} /></div><small>{answeredCount + 1}/{Math.max(totalQuestions, 1)}</small></div>
+      <div className="guide-progress"><span>{guide.eyebrow}</span><div><i style={{ width: `${Math.max(8, (questionNumber / safeTotalQuestions) * 100)}%` }} /></div><small>{questionNumber}/{safeTotalQuestions}</small></div>
       <section className="ai-guide-stage guide-stage">
         <div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{guide.message}</p></div>
         <GuideCharacter pose="pointer" />
       </section>
-      <div className="question-context"><span>{guide.label}</span><FlightLine /></div>
+      <div className="question-context"><span>{guide.label}</span><FlightLine progress={questionProgress} /></div>
       <h1 className="guide-question">{question.questionText}</h1>
       <div className="choice-list question-choices">
         {question.options.sort((a, b) => a.sequence - b.sequence).map((option) => (
@@ -782,7 +787,7 @@ function Passport({ souvenir, onAccount, onReset }: { souvenir: JourneySouvenir;
     <div className="screen completion-screen latest-passport-screen my-passport-screen figma-my-passport">
       <Header title="MCM PASSPORT" />
       <div className="passport-saved-title"><Check /><div><h1>My passport에 저장 완료!</h1><p>오늘의 여정 결과와 혜택이 저장되었습니다.</p></div></div>
-      <section className="saved-coupon"><CouponIcon /><div><small>SOUVENIR COUPON</small><strong>10% OFF</strong><p>추천 제품에 사용 가능</p></div><div className="coupon-download"><BookmarkCheck /><small>쿠폰 다운로드</small></div></section>
+      <section className="saved-coupon"><CouponIcon /><div><small>SOUVENIR COUPON</small><strong>10% OFF</strong><p>추천 제품에 사용 가능</p></div><div className="coupon-download"><CouponDownloadIcon /><small>쿠폰 다운로드</small></div></section>
       <div className="passport-products-title"><h2>City Code에 더 어울리는 제품</h2><button onClick={onAccount}>전체 보기 <ChevronRight /></button></div>
       <div className="passport-products">{[1,2,3,4].map((number) => <div key={number}><Image src={`/images/figma-product-${number}.png`} alt={`${souvenir.cityCodeName} 추천 제품 ${number}`} fill sizes="110px" loading="eager" /></div>)}</div>
       <p className="passport-footnote">오늘의 Journey를 다시 보고싶으신가요?<br />My Passport → My Journey에서 확인할 수 있어요.</p>
@@ -840,8 +845,14 @@ function CouponIcon() {
   return <Image className="coupon-icon" src="/images/figma-coupon-icon.svg" alt="" width={52} height={41} aria-hidden="true" />;
 }
 
-function FlightLine() {
-  return <span className="flight-line" aria-hidden="true"><i /><b><svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.2753 10.5827C22.2753 11.5118 21.5273 12.2599 20.606 12.252L14.4801 12.252L8.91314 21.1575L6.68479 21.1654L9.48007 12.2599L3.33834 12.2599L1.67693 14.4882L-0.00023906 14.4803L1.11787 10.5906L-0.000238723 6.68505L1.6848 6.6693L3.36196 8.92915L9.45645 8.92915L6.6848 1.89164e-05L8.91314 0.00789287L14.4801 8.9134L20.606 8.9134C21.5037 8.89765 22.2911 9.68505 22.2753 10.5827Z" fill="#B07A36" /></svg></b><i /></span>;
+function CouponDownloadIcon() {
+  return <span className="coupon-download-icon" aria-hidden="true"><Image src="/images/figma-coupon-download.svg" alt="" width={32} height={37} /></span>;
+}
+
+function FlightLine({ progress }: { progress?: number }) {
+  const moving = progress !== undefined;
+  const position = `${Math.min(100, Math.max(0, progress ?? 50))}%`;
+  return <span className={`flight-line ${moving ? "flight-line--progress" : ""}`} aria-hidden="true"><i /><b style={moving ? { left: `clamp(12px, ${position}, calc(100% - 12px))` } : undefined}><svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.2753 10.5827C22.2753 11.5118 21.5273 12.2599 20.606 12.252L14.4801 12.252L8.91314 21.1575L6.68479 21.1654L9.48007 12.2599L3.33834 12.2599L1.67693 14.4882L-0.00023906 14.4803L1.11787 10.5906L-0.000238723 6.68505L1.6848 6.6693L3.36196 8.92915L9.45645 8.92915L6.6848 1.89164e-05L8.91314 0.00789287L14.4801 8.9134L20.606 8.9134C21.5037 8.89765 22.2911 9.68505 22.2753 10.5827Z" fill="#B07A36" /></svg></b><i /></span>;
 }
 
 function guideCopy(questionCode: string, spotName: string) {

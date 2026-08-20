@@ -332,8 +332,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .latest-guide-screen .question-choices button svg { color: #b28a55; }
 .latest-guide-screen .question-choices button:hover,
 .latest-guide-screen .question-choices button.chosen { border-color: #d0a568; background: linear-gradient(100deg, #b98743, #8b6235); color: #fff; }
-.voice-answer { min-height: 43px; margin: 18px 18px 0; padding: 0 8px 0 17px; border: 1px solid #55483d; border-radius: 24px; background: #211b17; color: #948b83; display: flex; align-items: center; justify-content: space-between; font-size: 8px; }
+.voice-answer { min-height: 68px; margin: 18px 18px 0; padding: 9px 8px 9px 17px; border: 1px solid #55483d; border-radius: 20px; background: #211b17; color: #948b83; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 8px; cursor: text; }
 .voice-answer svg { width: 30px; height: 30px; padding: 8px; border-radius: 50%; background: #43372e; color: #fff; }
+.voice-answer .voice-copy { flex: 1; }
+.voice-answer textarea { width: 100%; min-height: 34px; padding: 0; resize: none; overflow: hidden; border: 0; outline: 0; background: transparent; color: #f3eee8; font: 11px/17px "Noto Sans KR", sans-serif; }
+.voice-answer textarea::placeholder { color: #928980; opacity: 1; }
+.voice-answer:focus-within { border-color: #c99a5d; box-shadow: 0 0 0 2px rgba(201,154,93,.12); }
+.guide-answer-submit { width: calc(100% - 36px); min-height: 50px; margin: 14px 18px 0; }
+.guide-answer-submit:disabled { opacity: .42; cursor: not-allowed; }
 
 .signal-guide, .map-guide { height: 246px; padding: 30px 20px 0; overflow: hidden; }
 .signal-guide > div, .map-guide > div { position: relative; z-index: 2; max-width: 76%; }
@@ -747,14 +753,16 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .passport-offer-guide { min-height: 218px; padding-top: 70px; }
 .passport-offer-guide .ai-message { width: 276px; margin: 0; }
 .passport-offer-guide .guide-character { right: -1px; bottom: 4px; width: 132px; }
-.passport-offer-card { min-height: 260px; margin-top: 14px; border: 1.5px solid #a98455; border-radius: 20px; box-shadow: none; }
-.figma-passport-ticket::before, .figma-passport-ticket::after { content: ""; position: absolute; top: -12px; width: 28px; height: 28px; border-radius: 50%; background: var(--figma-dark); border: 1.5px solid #a98455; }
-.figma-passport-ticket::before { left: calc(70% - 14px); }
-.figma-passport-ticket::after { left: calc(70% - 14px); top: auto; bottom: -12px; }
-.passport-offer-card > small { font-size: 11px; line-height: 16px; }
-.passport-offer-name { position: absolute; left: 20px; bottom: 67px; width: auto !important; border: 0 !important; font-size: 15px; }
-.passport-offer-destination { position: absolute; left: 20px; bottom: 35px; width: auto !important; border: 0 !important; color: var(--figma-gold); font-size: 11px; }
-.passport-offer-card > svg { right: 39px; bottom: 102px; }
+.passport-offer-card.figma-passport-ticket { width: 100%; min-height: 0; aspect-ratio: 372 / 228; margin-top: 14px; padding: 0; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.figma-passport-ticket::before, .figma-passport-ticket::after { content: none; }
+.figma-passport-ticket > img { position: absolute; display: block; object-fit: fill; }
+.figma-passport-ticket .figma-ticket-main { z-index: 0; inset: 0; width: 100%; height: 100%; }
+.figma-passport-ticket .figma-ticket-side { z-index: 1; top: 3.07%; right: 0; width: 27.15%; height: 93.86%; }
+.figma-passport-ticket .figma-ticket-divider { z-index: 2; top: 11.51%; left: 69.62%; width: .1344%; height: 76.97%; }
+.figma-passport-ticket .figma-ticket-emblem { z-index: 2; top: 40.35%; left: 77.15%; width: 12.52%; height: 18.07%; transform: rotate(180deg) scaleX(-1); }
+.passport-offer-card.figma-passport-ticket > small { position: absolute; z-index: 3; top: 8.77%; left: 5.38%; color: #fff; font-size: 11px; line-height: 16px; font-weight: 300; letter-spacing: 0; }
+.passport-offer-name { position: absolute; z-index: 3; left: 5.38%; bottom: 20.18%; width: auto !important; padding: 0 !important; border: 0 !important; color: #fff; font-size: 13px; line-height: 18px; font-weight: 500; }
+.passport-offer-destination { position: absolute; z-index: 3; left: 5.38%; bottom: 8.77%; width: auto !important; padding: 0 !important; border: 0 !important; color: #b07a36; font-size: 11px; line-height: 16px; font-weight: 400; }
 .passport-offer-actions { margin-top: 34px; padding: 0; display: grid; gap: 15px; }
 .figma-choice { min-height: 56px; border: 1.5px solid #a98455; border-radius: 10px; background: transparent; color: #fff; font-size: 15px; }
 .figma-choice.primary { background: linear-gradient(105deg,#ca8d3d,#6b503c); }
@@ -914,7 +922,7 @@ body { min-height: 100svh; overflow-x: hidden; }
 .passport-route .flight-line { min-width: 54px; }
 .passport-number { position: absolute; z-index: 2; right: 20px; bottom: 17px; color: rgba(231,214,190,.46); font-size: 7px; letter-spacing: .12em; }
 
-.voice-answer { width: calc(100% - 30px); min-height: 62px; margin: 22px 15px 0; padding: 8px 9px 8px 16px; border-radius: 14px; text-align: left; cursor: pointer; }
+.voice-answer { width: calc(100% - 36px); min-height: 68px; margin: 18px 18px 0; padding: 9px 8px 9px 16px; border-radius: 20px; text-align: left; cursor: text; }
 .voice-copy { min-width: 0; display: grid; gap: 3px; }
 .voice-copy strong { color: #c39a64; font-size: 9px; font-weight: 600; letter-spacing: .11em; }
 .voice-copy small { color: #b9b0a8; font-size: 11px; line-height: 16px; white-space: normal; }

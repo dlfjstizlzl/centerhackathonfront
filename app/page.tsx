@@ -216,9 +216,9 @@ export default function HomePage() {
     setJourneyView("question");
   });
 
-  const chooseAnswer = (optionId: number) => run(async () => {
+  const chooseAnswer = (optionId: number, answerText?: string) => run(async () => {
     if (!sessionId || !activeSpot || !activeQuestion) return;
-    await mcmApi.saveGuideResponse(sessionId, activeQuestion.id, optionId);
+    await mcmApi.saveGuideResponse(sessionId, activeQuestion.id, optionId, answerText);
     const nextAnswers = { ...answers, [activeQuestion.id]: optionId };
     setAnswers(nextAnswers);
 
@@ -356,7 +356,7 @@ export default function HomePage() {
         {phase === "welcome" && <Welcome connected={enteredByNfc} onStart={startJourney} onQr={startJourney} />}
         {phase === "consent" && <Consent entryMethod={entryMethod} required={journeyConsent} portrait={portraitConsent} onRequired={setJourneyConsent} onPortrait={setPortraitConsent} onBack={() => setPhase("welcome")} onStart={startJourney} />}
         {phase === "journey" && activeSpot && activeQuestion && journeyView === "question" && (
-          <QuestionScreen spot={activeSpot} question={activeQuestion} answeredCount={Object.keys(answers).length} totalQuestions={spots.reduce((count, spot) => count + spot.questions.length, 0) + 1} selected={answers[activeQuestion.id]} onAnswer={chooseAnswer} />
+          <QuestionScreen key={activeQuestion.id} spot={activeSpot} question={activeQuestion} answeredCount={Object.keys(answers).length} totalQuestions={spots.reduce((count, spot) => count + spot.questions.length, 0) + 1} selected={answers[activeQuestion.id]} onAnswer={chooseAnswer} />
         )}
         {phase === "journey" && journeyView === "checkpoint" && <NextStepScreen title="Origin Gate" message="오늘의 무드가 Passport에 기록됐어요. Origin Gate부터 여정을 시작해볼게요." button="Origin Gate로 이동" onContinue={() => setJourneyView("tag")} />}
         {phase === "journey" && journeyView === "tag" && <TagYourFind onContinue={() => setJourneyView("map")} onTag={tagProduct} />}
@@ -446,9 +446,11 @@ function QuestionScreen({ spot, question, answeredCount, totalQuestions, selecte
   answeredCount: number;
   totalQuestions: number;
   selected?: number;
-  onAnswer: (optionId: number) => void;
+  onAnswer: (optionId: number, answerText?: string) => void;
 }) {
   const guide = guideCopy(question.code, spot.name);
+  const [draftOptionId, setDraftOptionId] = useState<number | undefined>(selected);
+  const [draftAnswer, setDraftAnswer] = useState("");
   return (
     <div className="screen question-screen latest-guide-screen">
       <Header title="AI Guide" light />
@@ -461,15 +463,16 @@ function QuestionScreen({ spot, question, answeredCount, totalQuestions, selecte
       <h1 className="guide-question">{question.questionText}</h1>
       <div className="choice-list question-choices">
         {question.options.sort((a, b) => a.sequence - b.sequence).map((option) => (
-          <button className={selected === option.id ? "chosen" : ""} key={option.id} onClick={() => onAnswer(option.id)}>
+          <button className={draftOptionId === option.id ? "chosen" : ""} key={option.id} onClick={() => setDraftOptionId(option.id)}>
             {option.label}<ChevronRight />
           </button>
         ))}
       </div>
-      <button className="voice-answer" type="button" aria-label="음성으로 답하기">
-        <span className="voice-copy"><strong>VOICE ANSWER</strong><small>마이크를 누르고 음성으로 답해도 좋아요.</small></span>
+      <label className="voice-answer">
+        <span className="voice-copy"><strong>MY ANSWER · OPTIONAL</strong><textarea value={draftAnswer} onChange={(event) => setDraftAnswer(event.target.value)} maxLength={500} rows={2} placeholder="나만의 답변을 직접 입력해도 좋아요." /></span>
         <span className="voice-icon"><Mic /></span>
-      </button>
+      </label>
+      <button className="primary-button guide-answer-submit" type="button" disabled={draftOptionId === undefined} onClick={() => draftOptionId !== undefined && onAnswer(draftOptionId, draftAnswer.trim() || undefined)}>답변 저장하고 계속하기 <ArrowRight /></button>
     </div>
   );
 }
@@ -644,13 +647,13 @@ function PassportOffer({ onIssue, onBack }: { onIssue: () => void; onBack: () =>
       <Header title="AI Guide" light />
       <section className="passport-offer-guide guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>이제 MCM PASSPORT를 발급받을 수 있어요.<br />MCM PASSPORT를 화면으로 받아볼까요?</p></div><GuideCharacter pose="presenter" /></section>
       <div className="passport-offer-card figma-passport-ticket">
+        <Image className="figma-ticket-main" src="/images/figma-ticket-main.svg" alt="" width={372} height={228} priority />
+        <Image className="figma-ticket-side" src="/images/figma-ticket-side.svg" alt="" width={101} height={214} />
+        <Image className="figma-ticket-divider" src="/images/figma-ticket-divider.svg" alt="" width={1} height={176} />
+        <Image className="figma-ticket-emblem" src="/images/figma-ticket-emblem.svg" alt="" width={47} height={42} />
         <small>STYLE JOURNEY<br />PASSPORT</small>
-        <div className="passport-chip" aria-hidden="true"><i /><i /><i /></div>
-        <div className="passport-offer-route"><b>SEO</b><FlightLine /><b>YOU</b></div>
         <div className="passport-offer-name">GUEST · JIYOON</div>
         <div className="passport-offer-destination">DESTINATION · CURATED BY YOU</div>
-        <span className="passport-offer-serial">NO. 2026–S1 · PRIVATE</span>
-        <Compass />
       </div>
       <div className="passport-offer-actions"><button className="figma-choice primary" onClick={onIssue}>네, 발급해주세요.</button><button className="figma-choice" onClick={onBack}>아니요, 조금 더 둘러볼래요.</button></div>
     </div>

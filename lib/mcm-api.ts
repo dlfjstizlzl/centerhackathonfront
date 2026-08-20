@@ -350,11 +350,11 @@ export const mcmApi = {
     }));
   },
 
-  async saveGuideResponse(sessionId: number, questionId: number, optionId: number): Promise<void> {
+  async saveGuideResponse(sessionId: number, questionId: number, optionId: number, answerText?: string): Promise<void> {
     if (!isLiveApi) return;
     await request(`/api/passport-sessions/${sessionId}/guide-responses/${questionId}`, {
       method: "PUT",
-      body: JSON.stringify({ optionId }),
+      body: JSON.stringify({ optionId, answerText }),
     });
   },
 

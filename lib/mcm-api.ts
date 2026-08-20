@@ -140,7 +140,7 @@ export const isLiveApi = Boolean(API_BASE_URL);
 const browserCardStorageKey = "mcm-passport-browser-card-uid-v3";
 
 export function getPassportCardUid() {
-  if (typeof window === "undefined" || isLiveApi || passportCardUid !== "MCM-GUIDE-TEST-001") return passportCardUid;
+  if (typeof window === "undefined" || passportCardUid !== "MCM-GUIDE-TEST-001") return passportCardUid;
   const existing = window.localStorage.getItem(browserCardStorageKey);
   if (existing) return existing;
   const issued = `MCM-WEB-${window.crypto.randomUUID()}`;
@@ -149,7 +149,7 @@ export function getPassportCardUid() {
 }
 
 export function resetVirtualPassportCardUid() {
-  if (typeof window !== "undefined" && !isLiveApi && passportCardUid === "MCM-GUIDE-TEST-001") {
+  if (typeof window !== "undefined" && passportCardUid === "MCM-GUIDE-TEST-001") {
     window.localStorage.removeItem(browserCardStorageKey);
   }
 }

@@ -68,6 +68,7 @@ export type StyleResult = {
   cityCodeName: string;
   recommendedProductCode: string;
   recommendedProductName: string;
+  recommendedProductImageUrl?: string | null;
   styleMood: string;
   styleMoodName: string;
   backgroundCode: string;
@@ -411,6 +412,7 @@ export const mcmApi = {
           cityCodeName: "Berlin Afterdark Nomad",
           recommendedProductCode: "STARK_BACKPACK",
           recommendedProductName: "Stark Backpack",
+          recommendedProductImageUrl: "/images/travel-backpack.png",
           styleMood: "AFTERDARK_MOVEMENT",
           styleMoodName: "Afterdark Movement",
           backgroundCode: "BERLIN_AFTER_DARK",

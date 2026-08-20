@@ -35,6 +35,12 @@ export function isWebNfcSupported() {
   return Boolean(getNdefReader());
 }
 
+export function isIosDevice() {
+  if (typeof navigator === "undefined") return false;
+  return /iPad|iPhone|iPod/i.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
 export function buildNfcUrl(origin: string, payload: NfcPayload) {
   const url = new URL("/", origin);
   url.searchParams.set("nfc", payload.kind);

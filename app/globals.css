@@ -653,7 +653,7 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .signal-sheet .sheet-handle { display: none; }
 .signal-sheet > small { margin-top: 0; color: #fff; font-size: 15px; line-height: 23px; }
 .signal-label { margin: 5px 0 30px; color: var(--figma-gold); font-size: 11px; line-height: 16px; }
-.signal-sheet .next-destination-card { min-height: 206px; margin: 0 -10px; padding: 15px; border: 1.5px solid #a98455; border-radius: 10px; background: linear-gradient(112deg,#3c3937 0,#2c251f 35%,#332a22 78%); color: #fff; }
+.signal-sheet .next-destination-card { min-height: 206px; margin: 0 -10px; padding: 15px; border: 1.5px solid #a98455; border-radius: 10px; background: linear-gradient(112deg,#34271e 0,#2c211a 45%,#38281d 100%); color: #fff; }
 .signal-sheet .next-destination-card small { color: var(--figma-gold); font-size: 13px; }
 .signal-sheet .next-destination-card strong { margin: 6px 0 12px; font-family: inherit; font-size: 20px; }
 .signal-sheet .next-destination-card span { padding-top: 12px; border-top: 2px solid #7e5f39; color: rgba(255,255,255,.7); font-size: 15px; line-height: 23px; }
@@ -706,7 +706,7 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .frame42-status > small { font-size: 11px; line-height: 16px; }
 .frame42-next { margin-top: 27px; }
 .frame42-next > span { margin: 0 10px 10px; font-size: 15px; line-height: 23px; }
-.frame42-card { min-height: 206px; padding: 15px; border: 1.5px solid #a98455; border-radius: 10px; background: linear-gradient(112deg,#3c3937 0,#2c251f 35%,#332a22 78%); }
+.frame42-card { min-height: 206px; padding: 15px; border: 1.5px solid #a98455; border-radius: 10px; background: linear-gradient(112deg,#34271e 0,#2c211a 45%,#38281d 100%); }
 .frame42-card small { font-size: 13px; line-height: 18px; }
 .frame42-card strong { margin-top: 4px; font-size: 20px; line-height: 26px; }
 .frame42-card i { height: 2px; margin: 12px 0; background: #7e5f39; }
@@ -813,8 +813,8 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 /* 23 → 25 */
 .destination-screen { overflow-y: auto; animation: prototype-fade-in .5s ease-out both; }
 .destination-screen .destination-image { animation: image-focus .65s ease-out both; }
-.destination-screen .destination-overlay { background: linear-gradient(to bottom,rgba(4,10,23,.32),rgba(4,10,23,.1) 45%,rgba(3,9,22,.6)); }
-.destination-copy { min-height: 100%; padding: 42px 15px max(28px, env(safe-area-inset-bottom, 0px)); }
+.destination-screen .destination-overlay { background: linear-gradient(to bottom,rgba(4,8,18,.66) 0%,rgba(4,8,18,.42) 46%,rgba(3,7,16,.82) 100%); }
+.destination-copy { min-height: 0; padding: 42px 15px max(28px, env(safe-area-inset-bottom, 0px)); }
 .destination-copy h1 { margin-top: 13px; color: #fff; font-size: 20px; line-height: 28px; }
 .destination-copy > p { color: #fff; font-size: 13px; line-height: 18px; }
 .destination-product { margin-top: clamp(34px, 12dvh, 140px); height: 168px; border-radius: 20px 20px 0 0; background: rgba(247,247,245,.9); }
@@ -829,6 +829,7 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 /* 28 + Frame 72 overlay */
 .figma-souvenir-screen { padding: 58px 15px 8px; background: var(--figma-paper); }
 .figma-souvenir-screen .completion-heading { margin: 4px 0 0; }
+.figma-souvenir-screen .completion-heading > span { font-size: 11px; line-height: 16px; letter-spacing: .12em; }
 .figma-souvenir-screen .completion-heading h1 { margin-top: 46px; font-size: 15px; }
 .figma-souvenir-screen .completion-heading p { color: #111; font-size: 15px; line-height: 23px; }
 .figma-souvenir-screen .completion-card { height: 372px; margin-top: 52px; }
@@ -1030,7 +1031,7 @@ body { min-height: 100svh; overflow-x: hidden; }
 
 /* Functional bottom sheets: tap the handle or drag it vertically. */
 .interactive-bottom-sheet {
-  box-shadow: 0 -12px 32px rgba(22,17,13,.16);
+  box-shadow: none;
   transition: transform .35s ease-out;
 }
 .sheet-handle,
@@ -1069,7 +1070,7 @@ body { min-height: 100svh; overflow-x: hidden; }
 .journey-next-status > span { font-size: 15px; line-height: 23px; }
 .journey-next-status > small { color: var(--figma-gold); font-size: 11px; line-height: 16px; }
 .journey-next-label { display: block; margin: 0 10px 10px; font-size: 15px; line-height: 23px; }
-.map-next-card { min-height: 174px; margin-top: 10px; padding: 15px; border: 1.5px solid #a98455; border-radius: 10px; background: linear-gradient(112deg,#3c3937 0,#2c251f 35%,#332a22 78%); color: #fff; }
+.map-next-card { min-height: 174px; margin-top: 10px; padding: 15px; border: 1.5px solid #a98455; border-radius: 10px; background: linear-gradient(112deg,#34271e 0,#2c211a 45%,#38281d 100%); color: #fff; }
 .map-next-card > span { color: var(--figma-gold); font-size: 13px; }
 .map-next-card > strong { display: block; margin-top: 4px; font-size: 20px; line-height: 26px; }
 .map-next-card > i { display: block; height: 2px; margin: 12px 0; background: #7e5f39; }

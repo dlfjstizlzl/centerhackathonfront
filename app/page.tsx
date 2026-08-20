@@ -31,7 +31,7 @@ import {
   resetVirtualPassportCardUid,
   StyleResult,
 } from "@/lib/mcm-api";
-import { isWebNfcSupported, NfcPayload, parseNfcUrl, scanNfcTag } from "@/lib/nfc";
+import { isIosDevice, isWebNfcSupported, NfcPayload, parseNfcUrl, scanNfcTag } from "@/lib/nfc";
 
 type Phase = "welcome" | "consent" | "journey" | "boarding" | "connecting" | "analysis" | "destination" | "portrait" | "completion" | "passport";
 type JourneyView = "question" | "checkpoint" | "tag" | "product" | "map" | "spot-detail" | "passport-offer";
@@ -605,12 +605,16 @@ function SpotDetailScreen({ spot, previousSpotName, complete, signalCount, total
 
 function TagYourFind({ onContinue, onTag }: { onContinue: () => void; onTag: (productId?: number) => void }) {
   const [supported, setSupported] = useState(false);
+  const [iosDevice, setIosDevice] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const scanController = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    queueMicrotask(() => setSupported(isWebNfcSupported()));
+    queueMicrotask(() => {
+      setSupported(isWebNfcSupported());
+      setIosDevice(isIosDevice());
+    });
     return () => scanController.current?.abort();
   }, []);
 
@@ -649,10 +653,14 @@ function TagYourFind({ onContinue, onTag }: { onContinue: () => void; onTag: (pr
       <div className="tag-find-content">
         <button className={`tag-find-visual ${scanning ? "is-scanning" : ""}`} onClick={startScan} disabled={scanning || !supported} aria-label="NFC 가방 태그 스캔 시작"><Image src="/images/nfc-tag-visual.svg" alt="가방과 MCM Passport NFC 태깅" width={210} height={210} loading="eager" /></button>
         <h1>TAG YOUR FIND</h1>
-        <p>{supported ? "스캔을 시작한 뒤 마음에 드는 가방의\n스티커에 휴대폰을 가까이 대주세요." : "현재 환경에서는 NFC 기능을 사용할 수 없습니다.\nAndroid Chrome과 NFC 지원 기기에서 이용해주세요."}</p>
-        <div className={`nfc-ready ${scanning ? "scanning" : ""}`}><strong>{scanning ? "NFC · SCANNING…" : supported ? "NFC · TAP TO SCAN" : "NFC · UNAVAILABLE"}</strong></div>
+        <p>{supported
+          ? "스캔을 시작한 뒤 마음에 드는 가방의\n스티커에 휴대폰을 가까이 대주세요."
+          : iosDevice
+            ? "iPhone 상단을 가방의 NFC 스티커에\n가까이 대고 표시되는 알림을 눌러주세요."
+            : "현재 환경에서는 NFC 기능을 사용할 수 없습니다.\nAndroid Chrome과 NFC 지원 기기에서 이용해주세요."}</p>
+        <div className={`nfc-ready ${scanning ? "scanning" : ""}`}><strong>{scanning ? "NFC · SCANNING…" : supported ? "NFC · TAP TO SCAN" : iosDevice ? "IPHONE · NFC NOTIFICATION" : "NFC · UNAVAILABLE"}</strong></div>
         {scanError && <span className="nfc-scan-error" role="alert">{scanError}</span>}
-        {!supported && <div className="nfc-demo-actions"><small>PC·iPhone 데모</small>{nfcProducts.map((product, index) => <button key={product.id} onClick={() => onTag(product.id)}>가방 {String(index + 1).padStart(2, "0")}</button>)}</div>}
+        {!supported && <div className="nfc-demo-actions"><small>{iosDevice ? "알림이 뜨지 않으면 직접 선택" : "PC 데모"}</small>{nfcProducts.map((product, index) => <button key={product.id} onClick={() => onTag(product.id)}>가방 {String(index + 1).padStart(2, "0")}</button>)}</div>}
       </div>
       <div className="tag-find-actions"><button className="text-cta" onClick={onContinue}>Journey Map으로 돌아가기 <ArrowRight /></button></div>
     </div>
@@ -821,6 +829,7 @@ function Analysis({ result, tagged, onReady }: { result: StyleResult; tagged: bo
 
 function Destination({ result, onContinue }: { result: StyleResult; onContinue: () => void }) {
   const recommendedProductName = displayCatalogLabel(result.recommendedProductName || result.recommendedProductCode);
+  const recommendedProductImageUrl = result.recommendedProductImageUrl || "/images/travel-backpack.png";
   return (
     <div className="screen destination-screen">
       <Image className="destination-image" src={cityBackgroundImage(result.backgroundAssetKey)} alt={result.backgroundName} fill preload sizes="(max-width: 430px) 100vw, 430px" />
@@ -832,7 +841,7 @@ function Destination({ result, onContinue }: { result: StyleResult; onContinue: 
         <h1>{result.description}</h1>
         <p>고객님은 ‘내가 원하는 이미지’에 가까운 제품을 고를 때<br />구조감과 도시 무드를 중요하게 봐요.</p>
         <div className="destination-product">
-          <Image src="/images/travel-backpack.png" alt={recommendedProductName} width={82} height={82} />
+          <Image src={recommendedProductImageUrl} alt={recommendedProductName} width={127} height={137} />
           <div><small>AI RECOMMENDATION</small><strong>{recommendedProductName}</strong><span>{displayCatalogLabel(result.styleMoodName || result.styleMood)}</span></div>
         </div>
         <div className="destination-ribbon">{result.matchScore}% MATCH · {result.cityCodeName}</div>
@@ -844,13 +853,14 @@ function Destination({ result, onContinue }: { result: StyleResult; onContinue: 
 
 function Portrait({ result, saved, available, consented, onConsent, onSave, onContinue }: { result: StyleResult; saved: boolean; available: boolean; consented: boolean; onConsent: () => void; onSave: () => void; onContinue: () => void }) {
   const recommendedProductName = displayCatalogLabel(result.recommendedProductName || result.recommendedProductCode);
+  const recommendedProductImageUrl = result.recommendedProductImageUrl || "/images/travel-backpack.png";
   return (
     <div className="screen portrait-screen">
       <Image className="portrait-background" src={cityBackgroundImage(result.backgroundAssetKey)} alt="" fill sizes="(max-width: 430px) 100vw, 430px" loading="eager" />
       <div className="portrait-shade" />
       <Header title="STYLE PORTRAIT" light />
       <section className="portrait-copy"><small>STYLE FIT · OPTIONAL</small><h1>추천 가방을 들고<br />당신의 장면을 확인해보세요.</h1><p>{result.cityCodeName}의 무드 속에서 제품과 나의 어울림을 확인할 수 있어요.</p></section>
-      <div className="portrait-product"><Image src="/images/travel-backpack.png" alt={recommendedProductName} width={76} height={76} /><div><small>RECOMMENDED MCM PRODUCT</small><strong>{recommendedProductName}</strong><span>{result.matchScore}% Style Fit</span></div></div>
+      <div className="portrait-product"><Image src={recommendedProductImageUrl} alt={recommendedProductName} width={76} height={76} /><div><small>RECOMMENDED MCM PRODUCT</small><strong>{recommendedProductName}</strong><span>{result.matchScore}% Style Fit</span></div></div>
       <div className="portrait-actions">
         {!consented && <button className="portrait-consent" onClick={onConsent}><ShieldCheck /> Portrait 저장에 동의하기</button>}
         <button className={`light-button ${saved ? "saved" : ""}`} onClick={onSave} aria-pressed={saved} disabled={!available || saved}>{saved ? <Check /> : <ScanLine />}{saved ? "Style Portrait 저장 완료" : consented ? available ? "Style Portrait 저장하기" : "디스플레이에서 Portrait 준비 중" : "동의 후 Portrait 저장하기"}</button>

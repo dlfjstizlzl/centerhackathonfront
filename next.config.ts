@@ -5,6 +5,20 @@ const backendOrigin = (process.env.BACKEND_ORIGIN ?? "https://hackathonback.devd
 const nextConfig: NextConfig = {
   output: "standalone",
   allowedDevOrigins: ["*.trycloudflare.com"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.mcmworldwide.com",
+        pathname: "/i/mcmworldwide/**",
+      },
+      {
+        protocol: "https",
+        hostname: "mcmworldwide.sa",
+        pathname: "/cdn/shop/files/**",
+      },
+    ],
+  },
   async rewrites() {
     return [
       {

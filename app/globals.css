@@ -720,7 +720,6 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 
 /* 20 */
 .product-reason-screen { padding-top: 58px; animation: prototype-product-in 2s cubic-bezier(.34,1.56,.64,1) both; }
-.prototype-product-event.is-leaving { animation: prototype-product-out 1.5s ease-out both; }
 .product-reason-screen .app-header { padding: 0 15px; }
 .product-reason-hero { height: 266px; padding: 70px 15px 0; }
 .product-reason-hero .ai-message { width: 266px; }
@@ -737,9 +736,10 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .tag-signal-copy span { display: none; }
 .tag-signal-copy strong { display: none; }
 .tag-signal-copy p { color: #333; font-size: 15px; line-height: 23px; }
-.tagged-close { display: none; }
+.product-reason-sheet { padding-bottom: 92px; }
+.tagged-close { position: absolute; z-index: 12; left: 15px; right: 15px; bottom: max(16px, env(safe-area-inset-bottom, 0px)); width: auto; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; margin: 0; box-shadow: 0 10px 24px rgba(24,18,14,.2); }
+.tagged-close svg { width: 18px; }
 @keyframes prototype-product-in { from { opacity: 0; transform: scale(.86); } to { opacity: 1; transform: none; } }
-@keyframes prototype-product-out { to { opacity: 0; transform: translateY(34px) scale(.97); } }
 
 /* 38 */
 .passport-offer-screen { padding: 58px 15px 18px; animation: prototype-smart-in 1.5s cubic-bezier(.34,1.56,.64,1) both; }

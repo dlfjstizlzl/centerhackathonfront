@@ -241,10 +241,6 @@ export default function HomePage() {
 
   const tagProduct = (productId = nfcProducts[0].id) => run(async () => {
     if (!sessionId) return;
-    if (tagged && taggedProductId === productId) {
-      setJourneyView("product");
-      return;
-    }
     const product = await mcmApi.getProduct(productId);
     await mcmApi.tagProduct(sessionId, productId);
     setTagged(true);
@@ -258,13 +254,6 @@ export default function HomePage() {
     const productId = payload?.productId;
     if (!hydrated || !sessionId || !productId) return;
     pendingNfcProduct.current = null;
-    if (tagged && taggedProductId === productId) {
-      queueMicrotask(() => {
-        setPhase("journey");
-        setJourneyView("product");
-      });
-      return;
-    }
     setBusy(true);
     setError(null);
     void mcmApi.getProduct(productId)
@@ -587,19 +576,8 @@ function TagYourFind({ onContinue, onTag }: { onContinue: () => void; onTag: (pr
 }
 
 function TaggedProductScreen({ product, onClose }: { product: Product; onClose: () => void }) {
-  const [leaving, setLeaving] = useState(false);
-
-  useEffect(() => {
-    const hold = window.setTimeout(() => setLeaving(true), 2000);
-    const close = window.setTimeout(onClose, 3500);
-    return () => {
-      window.clearTimeout(hold);
-      window.clearTimeout(close);
-    };
-  }, [onClose]);
-
   return (
-    <div className={`screen product-reason-screen prototype-product-event ${leaving ? "is-leaving" : ""}`}>
+    <div className="screen product-reason-screen prototype-product-event">
       <Header title="AI Guide" light />
       <section className="product-reason-hero"><div className="ai-message"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter /></section>
       <section className="product-reason-sheet">
@@ -607,8 +585,8 @@ function TaggedProductScreen({ product, onClose }: { product: Product; onClose: 
         <div className="mini-tagged-product"><Image src={product.imageUrl ?? "/images/travel-backpack.png"} alt={product.name} width={82} height={82} /><div><strong>{product.name}</strong><span>{product.color} · {product.material} · {product.silhouette}</span></div><Check /></div>
         <h1>이 제품이 취향에 남긴 신호</h1>
         <div className="tag-signal-copy"><span>MOVEMENT</span><strong>Afterdark</strong><p>도시의 밤처럼 구조적이고 자유로운 이동 감각이 오늘의 선택과 연결됐어요.</p></div>
-        <button className="primary-button tagged-close" onClick={onClose}>Journey Map으로 돌아가기 <ArrowRight /></button>
       </section>
+      <button className="primary-button tagged-close" onClick={onClose}>확인했어요 · 계속하기 <ArrowRight /></button>
     </div>
   );
 }

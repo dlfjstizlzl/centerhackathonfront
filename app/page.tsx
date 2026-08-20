@@ -49,6 +49,7 @@ type PersistedState = {
   answers: Record<number, number | null>;
   stamps: number[];
   tagged: boolean;
+  taggedProductIds?: number[];
   taggedProductId: number | null;
   taggedProductDetails: Product | null;
   productReason: string | null;
@@ -70,6 +71,7 @@ export default function HomePage() {
   const [answers, setAnswers] = useState<Record<number, number | null>>({});
   const [stamps, setStamps] = useState<number[]>([]);
   const [tagged, setTagged] = useState(false);
+  const [taggedProductIds, setTaggedProductIds] = useState<number[]>([]);
   const [taggedProductId, setTaggedProductId] = useState<number | null>(null);
   const [taggedProductDetails, setTaggedProductDetails] = useState<Product | null>(null);
   const [productReason, setProductReason] = useState<string | null>(null);
@@ -111,6 +113,7 @@ export default function HomePage() {
         setAnswers({});
         setStamps([]);
         setTagged(false);
+        setTaggedProductIds([]);
         setTaggedProductId(null);
         setTaggedProductDetails(null);
         setProductReason(null);
@@ -135,7 +138,9 @@ export default function HomePage() {
           setActiveSpotIndex(state.activeSpotIndex);
           setAnswers(state.answers);
           setStamps(state.stamps);
-          setTagged(state.tagged);
+          const restoredProductIds = state.taggedProductIds ?? (state.taggedProductId ? [state.taggedProductId] : []);
+          setTagged(state.tagged || restoredProductIds.length > 0);
+          setTaggedProductIds(restoredProductIds);
           setTaggedProductId(state.taggedProductId ?? null);
           setTaggedProductDetails(state.taggedProductDetails ?? null);
           setProductReason(state.productReason ?? null);
@@ -171,6 +176,7 @@ export default function HomePage() {
       answers,
       stamps,
       tagged,
+      taggedProductIds,
       taggedProductId,
       taggedProductDetails,
       productReason,
@@ -183,7 +189,7 @@ export default function HomePage() {
       accountLinked,
     };
     window.localStorage.setItem(getStorageKey(), JSON.stringify(state));
-  }, [phase, journeyView, sessionId, activeSpotIndex, answers, stamps, tagged, taggedProductId, taggedProductDetails, productReason, tagConnected, portraitSaved, styleResult, souvenir, entryMethod, souvenirSaved, accountLinked, hydrated]);
+  }, [phase, journeyView, sessionId, activeSpotIndex, answers, stamps, tagged, taggedProductIds, taggedProductId, taggedProductDetails, productReason, tagConnected, portraitSaved, styleResult, souvenir, entryMethod, souvenirSaved, accountLinked, hydrated]);
 
   const activeSpot = spots[activeSpotIndex];
   const activeQuestion = activeSpot
@@ -247,6 +253,7 @@ export default function HomePage() {
     const product = await mcmApi.getProduct(productId);
     await mcmApi.tagProduct(sessionId, productId);
     setTagged(true);
+    setTaggedProductIds((previous) => previous.includes(productId) ? previous : [...previous, productId]);
     setTaggedProductId(productId);
     setTaggedProductDetails(product);
     setJourneyView("product");
@@ -263,6 +270,7 @@ export default function HomePage() {
       .then(async (product) => {
         await mcmApi.tagProduct(sessionId, productId);
         setTagged(true);
+        setTaggedProductIds((previous) => previous.includes(productId) ? previous : [...previous, productId]);
         setTaggedProductId(productId);
         setTaggedProductDetails(product);
         setPhase("journey");
@@ -335,6 +343,7 @@ export default function HomePage() {
     setAnswers({});
     setStamps([]);
     setTagged(false);
+    setTaggedProductIds([]);
     setTaggedProductId(null);
     setTaggedProductDetails(null);
     setProductReason(null);
@@ -368,7 +377,7 @@ export default function HomePage() {
           <SpotDetailScreen spot={activeSpot} previousSpotName={spots[activeSpotIndex - 1]?.name} complete={stamps.includes(activeSpot.id)} signalCount={stamps.length + (tagged ? 1 : 0)} totalSignals={spots.length + 1} onStart={() => setJourneyView("question")} onMap={() => setJourneyView("map")} />
         )}
         {phase === "journey" && journeyView === "map" && (
-          <JourneyMap spots={spots} stamps={stamps} tagged={tagged} requiredComplete={requiredComplete} onSpot={openSpot} onTag={() => setJourneyView("tag")} onBoard={() => setJourneyView("passport-offer")} />
+          <JourneyMap spots={spots} stamps={stamps} tagged={tagged} taggedProductCount={taggedProductIds.length || (tagged ? 1 : 0)} requiredComplete={requiredComplete} onSpot={openSpot} onTag={() => setJourneyView("tag")} onBoard={() => setJourneyView("passport-offer")} />
         )}
         {phase === "journey" && journeyView === "passport-offer" && <PassportOffer onIssue={issueBoarding} onBack={() => setJourneyView("map")} />}
         {phase === "boarding" && <Boarding stampCount={stamps.length + (tagged ? 1 : 0)} onBack={() => { setPhase("journey"); setJourneyView("map"); }} onContinue={() => { setTagConnected(false); setPhase("connecting"); }} />}
@@ -614,10 +623,11 @@ function TaggedProductScreen({ product, onClose }: { product: Product; onClose: 
   );
 }
 
-function JourneyMap({ spots, stamps, tagged, requiredComplete, onSpot, onTag, onBoard }: {
+function JourneyMap({ spots, stamps, tagged, taggedProductCount, requiredComplete, onSpot, onTag, onBoard }: {
   spots: JourneySpot[];
   stamps: number[];
   tagged: boolean;
+  taggedProductCount: number;
   requiredComplete: boolean;
   onSpot: (index: number) => void;
   onTag: () => void;
@@ -643,7 +653,7 @@ function JourneyMap({ spots, stamps, tagged, requiredComplete, onSpot, onTag, on
             const completionLabels = ["Mood selected", "Texture signal", "Motion signal", "배경 무드 발견"];
             return <button className={complete ? "complete" : ""} key={spot.id} onClick={() => onSpot(index)}><div><strong>{spot.name}</strong><span>{complete ? `완료 · ${completionLabels[index] ?? "Stamp collected"}` : index === stamps.length ? `NEXT · ${completionLabels[index] ?? "다음 감각 발견"}` : spot.description}</span></div>{complete ? <Stamp /> : <ChevronRight />}</button>;
           })}
-          <button className={`product-list-row ${tagged ? "complete" : ""}`} onClick={onTag}><div><strong>Product Tagging</strong><span>{tagged ? "완료 · 1 product saved" : "1 product saved"}</span></div>{tagged ? <Stamp /> : <ScanLine />}</button>
+          <button className={`product-list-row ${tagged ? "complete" : ""}`} onClick={onTag}><div><strong>Product Tagging</strong><span>{tagged ? "완료 · " : ""}{taggedProductCount} {taggedProductCount === 1 ? "product" : "products"} saved</span></div>{tagged ? <Stamp /> : <ScanLine />}</button>
         </div>
         {requiredComplete && <button className="primary-button map-boarding" onClick={onBoard}>MCM Passport 발급받기 <ArrowRight /></button>}
       </section>
@@ -737,8 +747,8 @@ function Destination({ result, onContinue }: { result: StyleResult; onContinue: 
           <div><small>AI RECOMMENDATION</small><strong>{result.recommendedProductName}</strong><span>{result.styleMoodName}</span></div>
         </div>
         <div className="destination-ribbon">{result.matchScore}% MATCH · {result.cityCodeName}</div>
+        <button className="light-button destination-cta" onClick={onContinue}>이 결과로 Souvenir 만들기 <ArrowRight /></button>
       </div>
-      <button className="light-button" onClick={onContinue}>이 결과로 Souvenir 만들기 <ArrowRight /></button>
     </div>
   );
 }

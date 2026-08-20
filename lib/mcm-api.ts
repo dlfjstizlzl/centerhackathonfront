@@ -46,10 +46,12 @@ export type Product = {
   code: string;
   name: string;
   category: string;
+  description?: string | null;
   color?: string | null;
   material?: string | null;
   silhouette?: string | null;
   imageUrl?: string | null;
+  recommendable?: boolean;
 };
 
 export type BoardingPass = {
@@ -367,6 +369,24 @@ export const mcmApi = {
       method: "POST",
       body: JSON.stringify({ productId }),
     }, [201]);
+  },
+
+  async getProduct(productId: number): Promise<Product> {
+    if (!isLiveApi) {
+      return structuredClone(nfcProducts.find((product) => product.id === productId) ?? {
+        ...demoProduct,
+        id: productId,
+        code: `PRODUCT_${productId}`,
+        name: `MCM Bag ${productId}`,
+      });
+    }
+    const product = await request<Omit<Product, "code"> & { code?: string }>(`/api/products/${productId}`);
+    const localProduct = nfcProducts.find((candidate) => candidate.id === productId);
+    return {
+      ...product,
+      code: product.code ?? localProduct?.code ?? `PRODUCT_${productId}`,
+      imageUrl: product.imageUrl?.includes("example.com") ? localProduct?.imageUrl ?? null : product.imageUrl,
+    };
   },
 
   async createBoardingPass(sessionId: number): Promise<BoardingPass> {

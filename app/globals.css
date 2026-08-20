@@ -282,14 +282,30 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .nfc-support.supported { background: #e7efe5; color: #4d684c; }
 .nfc-support.unsupported { background: #f4e7e2; color: #96513e; }
 .nfc-setup-list { display: grid; gap: 8px; }
-.nfc-setup-list button { width: 100%; min-height: 68px; padding: 10px 12px; border: 1px solid #dbd1c5; border-radius: 11px; background: #fff; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; text-align: left; cursor: pointer; }
+.nfc-entry-write { width: 100%; min-height: 68px; padding: 10px 12px; border: 1px solid #dbd1c5; border-radius: 11px; background: #fff; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; text-align: left; cursor: pointer; }
 .nfc-setup-list button:disabled { cursor: default; opacity: .58; }
-.nfc-setup-list button > b { width: 30px; height: 30px; border-radius: 50%; background: #2d241e; color: #fff; display: grid; place-items: center; font-size: 11px; }
-.nfc-setup-list button > b svg { width: 15px; }
+.nfc-entry-write > b, .nfc-bag-editor header > b { width: 30px; height: 30px; border-radius: 50%; background: #2d241e; color: #fff; display: grid; place-items: center; font-size: 11px; }
+.nfc-entry-write > b svg, .nfc-bag-editor header > b svg { width: 15px; }
 .nfc-setup-list strong, .nfc-setup-list small { display: block; }
 .nfc-setup-list strong { font-size: 12px; }
 .nfc-setup-list small { margin-top: 4px; color: #8b8177; font-size: 9px; }
 .nfc-setup-list em { color: #987447; font-size: 10px; font-style: normal; }
+.nfc-bag-editor { padding: 13px; border: 1px solid #dbd1c5; border-radius: 11px; background: #fff; }
+.nfc-bag-editor header { display: grid; grid-template-columns: 34px 1fr; align-items: center; gap: 10px; margin-bottom: 13px; }
+.nfc-bag-editor label { display: grid; gap: 5px; margin-top: 9px; }
+.nfc-bag-editor label > span { color: #746960; font-size: 9px; font-weight: 600; }
+.nfc-bag-editor input { width: 100%; height: 42px; padding: 0 12px; border: 1px solid #d8cdc0; border-radius: 8px; background: #fbf9f5; color: var(--ink); font: 12px "Manrope", sans-serif; outline: none; }
+.nfc-bag-editor input:focus { border-color: #aa824d; box-shadow: 0 0 0 2px rgba(180,138,80,.14); }
+.nfc-bag-editor .nfc-field-note { margin-top: 8px; color: #9a8e82; font-size: 8px; line-height: 1.4; }
+.nfc-bag-editor .nfc-lookup-button { width: 100%; min-height: 38px; margin-top: 8px; border: 1px solid #bfa47e; border-radius: 8px; background: #f5ecdf; color: #76562f; display: block; text-align: center; font-size: 10px; cursor: pointer; }
+.nfc-product-preview { margin-top: 10px; padding: 10px; border-radius: 8px; background: #e8efe5; color: #4e684c; display: grid; grid-template-columns: 18px 1fr; gap: 7px; align-items: start; }
+.nfc-product-preview > svg { width: 15px; }
+.nfc-product-preview strong { font-size: 11px; }
+.nfc-product-preview span { display: block; margin-top: 3px; color: #71816e; font-size: 8px; }
+.nfc-product-preview p { margin: 6px 0 0; color: #667364; font-size: 8px; line-height: 1.45; }
+.nfc-bag-editor .nfc-field-error { margin-top: 8px; color: #a34b36; font-size: 9px; line-height: 1.45; }
+.nfc-bag-editor .nfc-write-button { width: 100%; min-height: 42px; margin-top: 12px; padding: 0 12px; border: 0; border-radius: 9px; background: #2d241e; color: #fff; display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 10px; cursor: pointer; }
+.nfc-bag-editor .nfc-write-button svg { width: 14px; }
 .nfc-setup-error { margin-top: 11px; padding: 10px 12px; border-radius: 8px; background: #f5e4df; color: #8e3f2c; font-size: 10px; line-height: 1.5; }
 .nfc-setup-tip { margin-top: 18px; padding-top: 16px; border-top: 1px solid #ddd3c7; display: flex; align-items: flex-start; gap: 9px; color: #7e746b; font-size: 10px; line-height: 1.55; }
 .nfc-setup-tip svg { width: 18px; flex: none; color: var(--gold); }

@@ -31,10 +31,10 @@ NEXT_PUBLIC_NFC_BAG_2_NAME=Aren Shopper
 
 ## NFC 스티커 설정
 
-배포된 HTTPS 사이트의 `/nfc-setup`을 Web NFC를 지원하는 Android Chrome에서 엽니다. 화면 순서대로 `사이트 입장`, `가방 01`, `가방 02` 스티커를 기록할 수 있습니다. 가방별 Product ID와 표시 이름은 위 환경 변수로 실제 Backend 상품에 맞춰 설정합니다.
+배포된 HTTPS 사이트의 `/nfc-setup`을 Web NFC를 지원하는 Android Chrome에서 엽니다. 화면 순서대로 `사이트 입장`, `가방 01`, `가방 02` 스티커를 기록할 수 있습니다. 가방별 Backend Product ID를 입력하고 상품 정보가 정상 조회되는지 확인한 뒤 기록합니다.
 
 - 사이트 입장 스티커는 새 Passport 여정을 열고 이전 방문 기록을 초기화합니다.
-- 가방 스티커는 해당 Product ID를 전달합니다. 여정 화면에서 Web NFC로 읽거나, 휴대폰 기본 NFC 동작으로 URL을 열어도 진행 중 세션에 연결됩니다.
+- 가방 스티커는 해당 Product ID만 전달합니다. 태그 시 `GET /api/products/{productId}`로 이름, 카테고리, 색상, 소재, 실루엣과 이미지를 조회한 뒤 진행 중 세션에 연결합니다.
 - Web NFC 읽기·쓰기는 Android Chrome과 HTTPS(로컬 개발은 localhost)에서 동작합니다. iPhone은 기록 페이지 대신 NFC URL 태그를 여는 방식으로 이용합니다.
 - 스티커는 기록과 동작 테스트를 마친 뒤 부착하고, 금속 장식 바로 위는 피합니다.
 

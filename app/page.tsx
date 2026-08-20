@@ -32,7 +32,7 @@ import {
   resetVirtualPassportCardUid,
   StyleResult,
 } from "@/lib/mcm-api";
-import { isWebNfcSupported, parseNfcUrl, scanNfcTag } from "@/lib/nfc";
+import { isWebNfcSupported, NfcPayload, parseNfcUrl, scanNfcTag } from "@/lib/nfc";
 
 type Phase = "welcome" | "consent" | "journey" | "boarding" | "connecting" | "analysis" | "destination" | "portrait" | "completion" | "passport";
 type JourneyView = "question" | "checkpoint" | "tag" | "product" | "map" | "spot-detail" | "passport-offer";
@@ -40,7 +40,7 @@ type EntryMethod = "nfc" | "qr";
 const storageKeyPrefix = isLiveApi ? "mcm-passport-v4-live" : "mcm-passport-v4-demo";
 const getStorageKey = () => `${storageKeyPrefix}:${getPassportCardUid()}`;
 const sessionSchemaKey = "mcm-passport-session-schema";
-const currentSessionSchema = "journey-details-v2";
+const currentSessionSchema = "journey-details-v4";
 
 type PersistedState = {
   phase: Phase;
@@ -51,6 +51,7 @@ type PersistedState = {
   stamps: number[];
   tagged: boolean;
   taggedProductId: number | null;
+  taggedProductDetails: Product | null;
   productReason: string | null;
   tagConnected: boolean;
   portraitSaved: boolean;
@@ -71,6 +72,7 @@ export default function HomePage() {
   const [stamps, setStamps] = useState<number[]>([]);
   const [tagged, setTagged] = useState(false);
   const [taggedProductId, setTaggedProductId] = useState<number | null>(null);
+  const [taggedProductDetails, setTaggedProductDetails] = useState<Product | null>(null);
   const [productReason, setProductReason] = useState<string | null>(null);
   const [tagConnected, setTagConnected] = useState(false);
   const [portraitSaved, setPortraitSaved] = useState(false);
@@ -90,14 +92,14 @@ export default function HomePage() {
   const [hydrated, setHydrated] = useState(false);
   const [enteredByNfc, setEnteredByNfc] = useState(false);
   const persistenceReady = useRef(false);
-  const pendingNfcProduct = useRef<number | null>(null);
+  const pendingNfcProduct = useRef<NfcPayload | null>(null);
 
   useEffect(() => {
     persistenceReady.current = false;
     const sessionSchemaMatches = window.localStorage.getItem(sessionSchemaKey) === currentSessionSchema;
     const incomingNfc = parseNfcUrl(window.location.href);
     queueMicrotask(() => setEnteredByNfc(incomingNfc?.kind === "entry"));
-    pendingNfcProduct.current = incomingNfc?.kind === "product" ? incomingNfc.productId ?? null : null;
+    pendingNfcProduct.current = incomingNfc?.kind === "product" ? incomingNfc : null;
     if (!sessionSchemaMatches || incomingNfc?.kind === "entry") {
       window.localStorage.removeItem(getStorageKey());
       resetVirtualPassportCardUid();
@@ -111,6 +113,7 @@ export default function HomePage() {
         setStamps([]);
         setTagged(false);
         setTaggedProductId(null);
+        setTaggedProductDetails(null);
         setProductReason(null);
         setTagConnected(false);
         setStyleResult(null);
@@ -135,6 +138,7 @@ export default function HomePage() {
           setStamps(state.stamps);
           setTagged(state.tagged);
           setTaggedProductId(state.taggedProductId ?? null);
+          setTaggedProductDetails(state.taggedProductDetails ?? null);
           setProductReason(state.productReason ?? null);
           setTagConnected(state.tagConnected ?? false);
           setPortraitSaved(state.portraitSaved ?? false);
@@ -169,6 +173,7 @@ export default function HomePage() {
       stamps,
       tagged,
       taggedProductId,
+      taggedProductDetails,
       productReason,
       tagConnected,
       portraitSaved,
@@ -179,7 +184,7 @@ export default function HomePage() {
       accountLinked,
     };
     window.localStorage.setItem(getStorageKey(), JSON.stringify(state));
-  }, [phase, journeyView, sessionId, activeSpotIndex, answers, stamps, tagged, taggedProductId, productReason, tagConnected, portraitSaved, styleResult, souvenir, entryMethod, souvenirSaved, accountLinked, hydrated]);
+  }, [phase, journeyView, sessionId, activeSpotIndex, answers, stamps, tagged, taggedProductId, taggedProductDetails, productReason, tagConnected, portraitSaved, styleResult, souvenir, entryMethod, souvenirSaved, accountLinked, hydrated]);
 
   const activeSpot = spots[activeSpotIndex];
   const activeQuestion = activeSpot?.questions
@@ -189,6 +194,7 @@ export default function HomePage() {
   const requiredSpots = useMemo(() => spots.filter((spot) => spot.required), [spots]);
   const requiredComplete = requiredSpots.length > 0 && requiredSpots.every((spot) => stamps.includes(spot.id));
   const stampCodes = spots.filter((spot) => stamps.includes(spot.id)).map((spot) => spot.code);
+  const taggedProduct = taggedProductDetails ?? nfcProducts.find((candidate) => candidate.id === taggedProductId);
 
   const run = async (operation: () => Promise<void>) => {
     setBusy(true);
@@ -239,14 +245,17 @@ export default function HomePage() {
       setJourneyView("product");
       return;
     }
+    const product = await mcmApi.getProduct(productId);
     await mcmApi.tagProduct(sessionId, productId);
     setTagged(true);
     setTaggedProductId(productId);
+    setTaggedProductDetails(product);
     setJourneyView("product");
   });
 
   useEffect(() => {
-    const productId = pendingNfcProduct.current;
+    const payload = pendingNfcProduct.current;
+    const productId = payload?.productId;
     if (!hydrated || !sessionId || !productId) return;
     pendingNfcProduct.current = null;
     if (tagged && taggedProductId === productId) {
@@ -258,10 +267,12 @@ export default function HomePage() {
     }
     setBusy(true);
     setError(null);
-    void mcmApi.tagProduct(sessionId, productId)
-      .then(() => {
+    void mcmApi.getProduct(productId)
+      .then(async (product) => {
+        await mcmApi.tagProduct(sessionId, productId);
         setTagged(true);
         setTaggedProductId(productId);
+        setTaggedProductDetails(product);
         setPhase("journey");
         setJourneyView("product");
       })
@@ -304,7 +315,6 @@ export default function HomePage() {
 
   const prepareSouvenir = () => run(async () => {
     if (!sessionId || !styleResult) return;
-    const taggedProduct = nfcProducts.find((product) => product.id === taggedProductId);
     const created = await mcmApi.createSouvenir(sessionId, styleResult, stampCodes, taggedProduct);
     setSouvenir(created);
     setPhase("completion");
@@ -330,6 +340,7 @@ export default function HomePage() {
     setStamps([]);
     setTagged(false);
     setTaggedProductId(null);
+    setTaggedProductDetails(null);
     setProductReason(null);
     setTagConnected(false);
     setPortraitSaved(false);
@@ -358,7 +369,7 @@ export default function HomePage() {
         )}
         {phase === "journey" && journeyView === "checkpoint" && <NextStepScreen title="Origin Gate" message="오늘의 무드가 Passport에 기록됐어요. Origin Gate부터 여정을 시작해볼게요." button="Origin Gate로 이동" onContinue={() => setJourneyView("tag")} />}
         {phase === "journey" && journeyView === "tag" && <TagYourFind onContinue={() => setJourneyView("map")} onTag={tagProduct} />}
-        {phase === "journey" && journeyView === "product" && <TaggedProductScreen product={nfcProducts.find((product) => product.id === taggedProductId) ?? demoProduct} onClose={closeTaggedProduct} />}
+        {phase === "journey" && journeyView === "product" && <TaggedProductScreen product={taggedProduct ?? demoProduct} onClose={closeTaggedProduct} />}
         {phase === "journey" && activeSpot && journeyView === "spot-detail" && (
           <SpotDetailScreen spot={activeSpot} previousSpotName={spots[activeSpotIndex - 1]?.name} complete={stamps.includes(activeSpot.id)} signalCount={stamps.length + (tagged ? 1 : 0)} totalSignals={spots.length + 1} onStart={() => setJourneyView("question")} onMap={() => setJourneyView("map")} />
         )}
@@ -596,7 +607,7 @@ function TaggedProductScreen({ product, onClose }: { product: Product; onClose: 
   return (
     <div className={`screen product-reason-screen prototype-product-event ${leaving ? "is-leaving" : ""}`}>
       <Header title="AI Guide" light />
-      <section className="product-reason-hero"><div className="ai-message"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />Movement 선택과 연결되는 제품이에요.</p></div><GuideCharacter /></section>
+      <section className="product-reason-hero"><div className="ai-message"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter /></section>
       <section className="product-reason-sheet">
         <small>TAGGED PRODUCT · SIGNAL 01</small>
         <div className="mini-tagged-product"><Image src={product.imageUrl ?? "/images/travel-backpack.png"} alt={product.name} width={82} height={82} /><div><strong>{product.name}</strong><span>{product.color} · {product.material} · {product.silhouette}</span></div><Check /></div>

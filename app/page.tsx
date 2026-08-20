@@ -473,7 +473,7 @@ function Welcome({ connected, onStart, onQr }: { connected: boolean; onStart: ()
       <div className="micro-logo">MCM PASSPORT</div>
       <div className={`connection ${connected ? "is-connected" : ""}`}><span>{connected ? "NFC BRAND CARD CONNECTED" : "MCM PASSPORT READY"}</span><FlightLine /></div>
       <p className="welcome-copy">고객님의 선택으로 오늘의 목적지가 완성됩니다.<br />AI Guide와 대화하며 스타일 여정을 시작해보세요.</p>
-      <TicketImage src="/images/passport-ticket.png" alt="Style Journey Passport · Guest Jiyoon · Destination Curated by You" className="welcome-passport-ticket" preload />
+      <TicketImage src="/images/passport-ticket.svg" alt="Style Journey Passport · Guest Jiyoon · Destination Curated by You" className="welcome-passport-ticket" preload />
       <div className="guide-bubble guide-stage"><GuideCharacter pose="presenter" /><div className="guide-copy"><small>AI GUIDE · AMY</small><p>“설문 대신 대화로,<br />고객님의 취향을 함께 발견할게요.”</p></div></div>
       <button className="text-cta" onClick={onStart}>여정 시작하기 <ArrowRight /></button>
       <button className="qr-entry" onClick={onQr}><QrCode /> NFC가 인식되지 않나요? QR로 열기</button>
@@ -755,7 +755,7 @@ function PassportOffer({ onIssue, onBack }: { onIssue: () => void; onBack: () =>
     <div className="screen passport-offer-screen">
       <Header title="AI Guide" light />
       <section className="passport-offer-guide guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>이제 MCM PASSPORT를 발급받을 수 있어요.<br />MCM PASSPORT를 화면으로 받아볼까요?</p></div><GuideCharacter pose="presenter" /></section>
-      <TicketImage src="/images/passport-ticket.png" alt="Style Journey Passport · Guest Jiyoon · Destination Curated by You" className="passport-offer-card" preload />
+      <TicketImage src="/images/passport-ticket.svg" alt="Style Journey Passport · Guest Jiyoon · Destination Curated by You" className="passport-offer-card" preload />
       <div className="passport-offer-actions"><button className="figma-choice primary" onClick={onIssue}>네, 발급해주세요.</button><button className="figma-choice" onClick={onBack}>아니요, 조금 더 둘러볼래요.</button></div>
     </div>
   );
@@ -767,7 +767,7 @@ function Boarding({ stampCount, onBack, onContinue }: { stampCount: number; onBa
       <Header title="MCM PASSPORT" onBack={onBack} />
       <div className="boarding-kicker">{stampCount} SIGNALS COMPLETE <FlightLine /></div>
       <h1>Your Private Boarding is ready.</h1>
-      <TicketImage src="/images/boarding-pass-ready.png" alt="Private Boarding Pass · Gate S1 · Guest Jiyoon · Ready to Board" className="figma-boarding-pass" preload />
+      <TicketImage src="/images/boarding-pass-ready.svg" alt="Private Boarding Pass · Gate S1 · Guest Jiyoon · Ready to Board" className="figma-boarding-pass" preload />
       <section className="boarding-guide guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>여정이 완료됐어요.<br />Style Spot에서 AI Guide가 정리한 고객님의<br />City Code를 확인해보세요.</p></div><GuideCharacter pose="presenter" /></section>
       <button className="text-cta boarding-connect" onClick={onContinue}>Style spot으로 이동 <ArrowRight /></button>
     </div>

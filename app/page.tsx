@@ -683,7 +683,7 @@ function TaggedProductScreen({ product, onBack, onClose }: { product: Product; o
         <BottomSheetHandle expanded={sheetExpanded} onExpandedChange={setSheetExpanded} label="태그 결과" />
         <div className="product-reason-sheet-content">
           <small>TAGGED PRODUCT · SIGNAL 01</small>
-          <div className="mini-tagged-product"><Image src={product.imageUrl ?? "/images/travel-backpack.png"} alt={productName} width={82} height={82} /><div><strong>{productName}</strong><span>{productDetails}</span></div><Check /></div>
+          <div className="mini-tagged-product"><ProductImage src={product.imageUrl} alt={productName} width={82} height={82} /><div><strong>{productName}</strong><span>{productDetails}</span></div><Check /></div>
           <h1>이 제품이 취향에 남긴 신호</h1>
           <div className="tag-signal-copy"><span>MOVEMENT</span><strong>Afterdark</strong><p>도시의 밤처럼 구조적이고 자유로운 이동 감각이 오늘의 선택과 연결됐어요.</p></div>
         </div>
@@ -820,8 +820,7 @@ function Analysis({ result, tagged, onReady }: { result: StyleResult; tagged: bo
   return (
     <div className="screen analysis-screen figma-tap-animation">
       <Header title="AI Guide" light />
-      <div className="tap-hand"><ScanLine /><i /><i /></div>
-      <h1>Passport를 태그해주세요</h1>
+      <div className="tap-prompt"><div className="tap-hand"><ScanLine /><i /><i /></div><h1>Passport를 태그해주세요</h1></div>
       <div className="analysis-reveal"><Image src={cityBackgroundImage(result.backgroundAssetKey)} alt="" fill sizes="(max-width: 430px) 100vw, 430px" loading="eager" /><span>{result.cityCodeName}</span><small>{tagged ? "TAGGED PRODUCT + JOURNEY SIGNAL" : "JOURNEY SIGNAL CONNECTED"}</small></div>
     </div>
   );
@@ -841,7 +840,7 @@ function Destination({ result, onContinue }: { result: StyleResult; onContinue: 
         <h1>{result.description}</h1>
         <p>고객님은 ‘내가 원하는 이미지’에 가까운 제품을 고를 때<br />구조감과 도시 무드를 중요하게 봐요.</p>
         <div className="destination-product">
-          <Image src={recommendedProductImageUrl} alt={recommendedProductName} width={127} height={137} />
+          <ProductImage src={recommendedProductImageUrl} alt={recommendedProductName} width={127} height={137} />
           <div><small>AI RECOMMENDATION</small><strong>{recommendedProductName}</strong><span>{displayCatalogLabel(result.styleMoodName || result.styleMood)}</span></div>
         </div>
         <div className="destination-ribbon">{result.matchScore}% MATCH · {result.cityCodeName}</div>
@@ -860,7 +859,7 @@ function Portrait({ result, saved, available, consented, onConsent, onSave, onCo
       <div className="portrait-shade" />
       <Header title="STYLE PORTRAIT" light />
       <section className="portrait-copy"><small>STYLE FIT · OPTIONAL</small><h1>추천 가방을 들고<br />당신의 장면을 확인해보세요.</h1><p>{result.cityCodeName}의 무드 속에서 제품과 나의 어울림을 확인할 수 있어요.</p></section>
-      <div className="portrait-product"><Image src={recommendedProductImageUrl} alt={recommendedProductName} width={76} height={76} /><div><small>RECOMMENDED MCM PRODUCT</small><strong>{recommendedProductName}</strong><span>{result.matchScore}% Style Fit</span></div></div>
+      <div className="portrait-product"><ProductImage src={recommendedProductImageUrl} alt={recommendedProductName} width={76} height={76} /><div><small>RECOMMENDED MCM PRODUCT</small><strong>{recommendedProductName}</strong><span>{result.matchScore}% Style Fit</span></div></div>
       <div className="portrait-actions">
         {!consented && <button className="portrait-consent" onClick={onConsent}><ShieldCheck /> Portrait 저장에 동의하기</button>}
         <button className={`light-button ${saved ? "saved" : ""}`} onClick={onSave} aria-pressed={saved} disabled={!available || saved}>{saved ? <Check /> : <ScanLine />}{saved ? "Style Portrait 저장 완료" : consented ? available ? "Style Portrait 저장하기" : "디스플레이에서 Portrait 준비 중" : "동의 후 Portrait 저장하기"}</button>
@@ -957,6 +956,15 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
 function GuideCharacter({ pose }: { pose: "pointer" | "presenter" }) {
   const isPointer = pose === "pointer";
   return <Image className={`guide-character guide-character--${pose}`} src={`/images/amy-guide-${pose}.png`} alt="" width={isPointer ? 150 : 124} height={154} loading="eager" aria-hidden="true" />;
+}
+
+function ProductImage({ src, alt, width, height }: { src?: string | null; alt: string; width: number; height: number }) {
+  const fallback = "/images/travel-backpack.png";
+  const source = src || fallback;
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const resolvedSrc = failedSrc === source ? fallback : source;
+
+  return <Image src={resolvedSrc} alt={alt} width={width} height={height} unoptimized={resolvedSrc.startsWith("http")} onError={() => setFailedSrc(source)} />;
 }
 
 function CouponIcon() {

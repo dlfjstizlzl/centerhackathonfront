@@ -360,8 +360,6 @@ export default function HomePage() {
   return (
     <main className="experience-shell">
       <section className="mobile-app" aria-label="MCM Passport mobile experience">
-        <StatusBar light={phase === "journey" || phase === "analysis" || phase === "destination" || phase === "portrait"} />
-
         {phase === "welcome" && <Welcome connected={enteredByNfc} onStart={startJourney} onQr={startJourney} />}
         {phase === "consent" && <Consent entryMethod={entryMethod} required={journeyConsent} portrait={portraitConsent} onRequired={setJourneyConsent} onPortrait={setPortraitConsent} onBack={() => setPhase("welcome")} onStart={startJourney} />}
         {phase === "journey" && activeSpot && activeQuestion && journeyView === "question" && (
@@ -393,10 +391,6 @@ export default function HomePage() {
       </section>
     </main>
   );
-}
-
-function StatusBar({ light = false }: { light?: boolean }) {
-  return <div className={`status-bar ${light ? "light" : ""}`}><span>9:41</span><span className="status-icons">▮▮▮ ᴡɪꜰɪ ▰</span></div>;
 }
 
 function Header({ title, onBack, light = false }: { title: string; onBack?: () => void; light?: boolean }) {

@@ -866,9 +866,9 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .saved-coupon small { color: #666; font-size: 13px; }
 .saved-coupon strong { display: block; font-size: 20px; }
 .saved-coupon p { margin: 2px 0 0; color: #777; font-size: 11px; }
-.coupon-download { height: 72px; border-left: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
-.coupon-download-icon { position: relative; width: 30px; height: 35.762px; flex: 0 0 35.762px; }
-.coupon-download-icon img { position: absolute; left: -1px; top: 0; width: 32px; height: 36.762px; }
+.coupon-download { height: 72px; border-left: 1px solid #ddd; display: grid; grid-template-rows: 31px 16px; place-items: center; align-content: center; row-gap: 8px; }
+.coupon-download-icon { width: 27px; height: 31px; display: grid; place-items: center; }
+.coupon-download-icon img { display: block; width: 27px; height: 31px; object-fit: contain; }
 .coupon-download small { color: #5f5f59; font-size: 11px; line-height: 16px; font-weight: 400; letter-spacing: .1px; white-space: nowrap; }
 .passport-products-title { margin: 40px 0 14px; display: flex; align-items: center; justify-content: space-between; }
 .passport-products-title h2 { margin: 0; font-size: 15px; }
@@ -1015,7 +1015,7 @@ body { min-height: 100svh; overflow-x: hidden; }
 
 .coupon-icon { width: 52px; height: 41px; flex: 0 0 52px; object-fit: contain; }
 .coupon-card > .coupon-icon { width: 52px; height: 41px; }
-.saved-coupon { grid-template-columns: 52px 1fr 88px; }
+.saved-coupon { padding-right: 0; grid-template-columns: 52px minmax(0, 1fr) 110px; }
 .saved-coupon > .coupon-icon { width: 52px; height: 41px; }
 
 @media (max-width: 360px) {
@@ -1023,7 +1023,7 @@ body { min-height: 100svh; overflow-x: hidden; }
   .guide-stage .guide-character,
   .guide-stage .guide-character--pointer,
   .guide-stage .guide-character--presenter { width: auto; height: 144px; }
-  .saved-coupon { grid-template-columns: 44px 1fr 74px; }
+  .saved-coupon { padding-right: 0; grid-template-columns: 44px minmax(0, 1fr) 86px; }
   .saved-coupon > .coupon-icon { width: 44px; height: 35px; }
 }
 

@@ -576,7 +576,7 @@ function SpotDetailScreen({ spot, previousSpotName, complete, signalCount, total
     <div className="screen frame42-screen">
       <Header title="AI Guide" onBack={onMap} light />
       <section className="frame42-guide guide-stage">
-        <div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{complete ? `${spot.name} 여정을 이미 완료했어요. 기록된 내용을 다시 확인해볼까요?` : guideMessage}</p></div>
+        <div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{complete ? `${spot.name} 여정을 이미 완료했어요.` : guideMessage}</p></div>
         <GuideCharacter pose="pointer" />
       </section>
       <section className="frame42-status"><span>현재 상태</span><small>MY JOURNEY · {signalCount} / {totalSignals} SIGNALS</small></section>
@@ -652,16 +652,21 @@ function TagYourFind({ onContinue, onTag }: { onContinue: () => void; onTag: (pr
 
 function TaggedProductScreen({ product, onBack, onClose }: { product: Product; onBack: () => void; onClose: () => void }) {
   const [sheetExpanded, setSheetExpanded] = useState(true);
+  const productName = displayCatalogLabel(product.name);
+  const productDetails = [product.color, product.material, product.silhouette]
+    .filter((value): value is string => Boolean(value))
+    .map(displayCatalogLabel)
+    .join(" · ");
 
   return (
     <div className="screen product-reason-screen prototype-product-event">
       <Header title="AI Guide" light onBack={onBack} />
-      <section className="product-reason-hero guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter pose="pointer" /></section>
+      <section className="product-reason-hero guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{productName}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter pose="pointer" /></section>
       <section className={`product-reason-sheet interactive-bottom-sheet ${sheetExpanded ? "is-expanded" : "is-collapsed"}`}>
         <BottomSheetHandle expanded={sheetExpanded} onExpandedChange={setSheetExpanded} label="태그 결과" />
         <div className="product-reason-sheet-content">
           <small>TAGGED PRODUCT · SIGNAL 01</small>
-          <div className="mini-tagged-product"><Image src={product.imageUrl ?? "/images/travel-backpack.png"} alt={product.name} width={82} height={82} /><div><strong>{product.name}</strong><span>{product.color} · {product.material} · {product.silhouette}</span></div><Check /></div>
+          <div className="mini-tagged-product"><Image src={product.imageUrl ?? "/images/travel-backpack.png"} alt={productName} width={82} height={82} /><div><strong>{productName}</strong><span>{productDetails}</span></div><Check /></div>
           <h1>이 제품이 취향에 남긴 신호</h1>
           <div className="tag-signal-copy"><span>MOVEMENT</span><strong>Afterdark</strong><p>도시의 밤처럼 구조적이고 자유로운 이동 감각이 오늘의 선택과 연결됐어요.</p></div>
         </div>
@@ -806,6 +811,7 @@ function Analysis({ result, tagged, onReady }: { result: StyleResult; tagged: bo
 }
 
 function Destination({ result, onContinue }: { result: StyleResult; onContinue: () => void }) {
+  const recommendedProductName = displayCatalogLabel(result.recommendedProductName || result.recommendedProductCode);
   return (
     <div className="screen destination-screen">
       <Image className="destination-image" src="/images/berlin-ember.png" alt={result.backgroundName} fill priority sizes="(max-width: 430px) 100vw, 430px" />
@@ -817,8 +823,8 @@ function Destination({ result, onContinue }: { result: StyleResult; onContinue: 
         <h1>{result.description}</h1>
         <p>고객님은 ‘내가 원하는 이미지’에 가까운 제품을 고를 때<br />구조감과 도시 무드를 중요하게 봐요.</p>
         <div className="destination-product">
-          <Image src="/images/travel-backpack.png" alt={result.recommendedProductName} width={82} height={82} />
-          <div><small>AI RECOMMENDATION</small><strong>{result.recommendedProductName}</strong><span>{result.styleMoodName}</span></div>
+          <Image src="/images/travel-backpack.png" alt={recommendedProductName} width={82} height={82} />
+          <div><small>AI RECOMMENDATION</small><strong>{recommendedProductName}</strong><span>{displayCatalogLabel(result.styleMoodName || result.styleMood)}</span></div>
         </div>
         <div className="destination-ribbon">{result.matchScore}% MATCH · {result.cityCodeName}</div>
         <button className="light-button destination-cta" onClick={onContinue}>이 결과로 Souvenir 만들기 <ArrowRight /></button>
@@ -828,13 +834,14 @@ function Destination({ result, onContinue }: { result: StyleResult; onContinue: 
 }
 
 function Portrait({ result, saved, available, consented, onConsent, onSave, onContinue }: { result: StyleResult; saved: boolean; available: boolean; consented: boolean; onConsent: () => void; onSave: () => void; onContinue: () => void }) {
+  const recommendedProductName = displayCatalogLabel(result.recommendedProductName || result.recommendedProductCode);
   return (
     <div className="screen portrait-screen">
       <Image className="portrait-background" src="/images/berlin-ember.png" alt="" fill sizes="(max-width: 430px) 100vw, 430px" loading="eager" />
       <div className="portrait-shade" />
       <Header title="STYLE PORTRAIT" light />
       <section className="portrait-copy"><small>STYLE FIT · OPTIONAL</small><h1>추천 가방을 들고<br />당신의 장면을 확인해보세요.</h1><p>{result.cityCodeName}의 무드 속에서 제품과 나의 어울림을 확인할 수 있어요.</p></section>
-      <div className="portrait-product"><Image src="/images/travel-backpack.png" alt={result.recommendedProductName} width={76} height={76} /><div><small>RECOMMENDED MCM PRODUCT</small><strong>{result.recommendedProductName}</strong><span>{result.matchScore}% Style Fit</span></div></div>
+      <div className="portrait-product"><Image src="/images/travel-backpack.png" alt={recommendedProductName} width={76} height={76} /><div><small>RECOMMENDED MCM PRODUCT</small><strong>{recommendedProductName}</strong><span>{result.matchScore}% Style Fit</span></div></div>
       <div className="portrait-actions">
         {!consented && <button className="portrait-consent" onClick={onConsent}><ShieldCheck /> Portrait 저장에 동의하기</button>}
         <button className={`light-button ${saved ? "saved" : ""}`} onClick={onSave} aria-pressed={saved} disabled={!available || saved}>{saved ? <Check /> : <ScanLine />}{saved ? "Style Portrait 저장 완료" : consented ? available ? "Style Portrait 저장하기" : "디스플레이에서 Portrait 준비 중" : "동의 후 Portrait 저장하기"}</button>
@@ -938,7 +945,7 @@ function CouponIcon() {
 }
 
 function CouponDownloadIcon() {
-  return <span className="coupon-download-icon" aria-hidden="true"><Image src="/images/figma-coupon-download.svg" alt="" width={32} height={37} /></span>;
+  return <span className="coupon-download-icon" aria-hidden="true"><Image src="/images/figma-coupon-download.svg" alt="" width={27} height={31} /></span>;
 }
 
 function FlightLine({ progress }: { progress?: number }) {
@@ -963,6 +970,10 @@ function guideCopy(questionCode: string, spotName: string) {
     CITY_MOOD_SIGNAL: { eyebrow: "CITY MOOD ROOM", label: "CITY SENSE", message: "도시별 사운드, 조명과 컬러를 경험해보세요. 어떤 도시보다 오래 남는 감각을 선택해주세요." },
   };
   return copy[questionCode] ?? { eyebrow: spotName.toUpperCase(), label: "MOOD SELECT", message: `${spotName}에서 가장 오래 남은 감각을 선택해주세요.` };
+}
+
+function displayCatalogLabel(value: string) {
+  return value.replace(/_+/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function toMessage(caught: unknown) {

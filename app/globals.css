@@ -1011,6 +1011,9 @@ body { min-height: 100svh; overflow-x: hidden; }
   object-position: right bottom;
 }
 
+.map-guide.guide-stage .guide-character--presenter { height: 188px; }
+.boarding-screen .flight-line > i:last-child { display: none; }
+
 .coupon-icon { width: 52px; height: 41px; flex: 0 0 52px; object-fit: contain; }
 .coupon-card > .coupon-icon { width: 52px; height: 41px; }
 .saved-coupon { grid-template-columns: 52px 1fr 88px; }

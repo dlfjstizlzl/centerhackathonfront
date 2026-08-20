@@ -40,6 +40,15 @@ const storageKeyPrefix = isLiveApi ? "mcm-passport-v5-live" : "mcm-passport-v5-d
 const getStorageKey = () => `${storageKeyPrefix}:${getPassportCardUid()}`;
 const sessionSchemaKey = "mcm-passport-session-schema";
 const currentSessionSchema = "journey-details-v5";
+const cityBackgroundImages: Record<string, string> = {
+  "berlin-after-dark": "/images/berlin-after-dark.png",
+  "tokyo-quiet-line": "/images/tokyo-quiet-line.jpeg",
+  "seoul-pulse": "/images/seoul-pulse.png",
+  "munich-heritage": "/images/munich-heritage.png",
+  "new-york-graphic-city": "/images/new-york-graphic-city.png",
+  "hong-kong-neon-harbor": "/images/hong-kong-neon-harbor.png",
+  "shanghai-future-skyline": "/images/shanghai-future-skyline.png",
+};
 
 type PersistedState = {
   phase: Phase;
@@ -783,7 +792,7 @@ function Connecting({ failed, onBack, onTag }: {
       <p>{failed ? "연결이 완료되지 않았어요. QR로 다시 연결하거나 직원에게 도움을 요청해주세요." : "디스플레이 오른쪽 NFC 영역에 Passport를 가까이 대주세요."}</p>
       <div className={`gate-tap-card ${failed ? "failed" : ""}`} role="status" aria-label={failed ? "Style Spot 연결 실패" : "NFC Passport 태깅 대기"}>
         <span>{failed ? "CONNECTION INTERRUPTED" : "CITY CODE · LOCKED"}</span>
-        <div className="nfc-target">{failed ? <><WifiOff /><strong>TRY AGAIN</strong></> : <><i /><i /><ScanLine /><strong>TAP HERE</strong></>}</div>
+        <button className="nfc-target" type="button" onClick={onTag} aria-label={failed ? "QR로 다시 연결" : "Passport 태그 준비 완료"}>{failed ? <><WifiOff /><strong>TRY AGAIN</strong></> : <><i /><i /><ScanLine /><strong>TAP HERE</strong></>}</button>
         <div className="tap-meta"><small>{failed ? "QR RETRY" : "TAP"}</small><small>IDENTIFY</small><small>NEXT LAYER</small></div>
       </div>
       <p className="gate-explainer">태그가 인식되면 취향에 맞는 도시 배경과 추천 제품이 디스플레이에 나타나요.</p>
@@ -805,7 +814,7 @@ function Analysis({ result, tagged, onReady }: { result: StyleResult; tagged: bo
       <Header title="AI Guide" light />
       <div className="tap-hand"><ScanLine /><i /><i /></div>
       <h1>Passport를 태그해주세요</h1>
-      <div className="analysis-reveal"><Image src="/images/berlin-ember.png" alt="" fill sizes="(max-width: 430px) 100vw, 430px" loading="eager" /><span>{result.cityCodeName}</span><small>{tagged ? "TAGGED PRODUCT + JOURNEY SIGNAL" : "JOURNEY SIGNAL CONNECTED"}</small></div>
+      <div className="analysis-reveal"><Image src={cityBackgroundImage(result.backgroundAssetKey)} alt="" fill sizes="(max-width: 430px) 100vw, 430px" loading="eager" /><span>{result.cityCodeName}</span><small>{tagged ? "TAGGED PRODUCT + JOURNEY SIGNAL" : "JOURNEY SIGNAL CONNECTED"}</small></div>
     </div>
   );
 }
@@ -814,7 +823,7 @@ function Destination({ result, onContinue }: { result: StyleResult; onContinue: 
   const recommendedProductName = displayCatalogLabel(result.recommendedProductName || result.recommendedProductCode);
   return (
     <div className="screen destination-screen">
-      <Image className="destination-image" src="/images/berlin-ember.png" alt={result.backgroundName} fill priority sizes="(max-width: 430px) 100vw, 430px" />
+      <Image className="destination-image" src={cityBackgroundImage(result.backgroundAssetKey)} alt={result.backgroundName} fill preload sizes="(max-width: 430px) 100vw, 430px" />
       <div className="destination-overlay" />
       <Header title="YOUR STYLE DESTINATION" light />
       <div className="destination-copy">
@@ -837,7 +846,7 @@ function Portrait({ result, saved, available, consented, onConsent, onSave, onCo
   const recommendedProductName = displayCatalogLabel(result.recommendedProductName || result.recommendedProductCode);
   return (
     <div className="screen portrait-screen">
-      <Image className="portrait-background" src="/images/berlin-ember.png" alt="" fill sizes="(max-width: 430px) 100vw, 430px" loading="eager" />
+      <Image className="portrait-background" src={cityBackgroundImage(result.backgroundAssetKey)} alt="" fill sizes="(max-width: 430px) 100vw, 430px" loading="eager" />
       <div className="portrait-shade" />
       <Header title="STYLE PORTRAIT" light />
       <section className="portrait-copy"><small>STYLE FIT · OPTIONAL</small><h1>추천 가방을 들고<br />당신의 장면을 확인해보세요.</h1><p>{result.cityCodeName}의 무드 속에서 제품과 나의 어울림을 확인할 수 있어요.</p></section>
@@ -898,7 +907,7 @@ function Passport({ souvenir, onBack, onAccount, onReset }: { souvenir: JourneyS
 function SouvenirCard({ souvenir }: { souvenir: JourneySouvenir }) {
   return (
     <section className="completion-card">
-      <Image className="completion-card-image" src="/images/berlin-ember.png" alt={souvenir.backgroundName} fill sizes="(max-width: 430px) 100vw, 430px" loading="eager" />
+      <Image className="completion-card-image" src={cityBackgroundImage(souvenir.backgroundAssetKey)} alt={souvenir.backgroundName} fill sizes="(max-width: 430px) 100vw, 430px" loading="eager" />
       <div className="completion-card-shade" />
       <div className="completion-card-content">
         <small>MCM · STYLE JOURNEY 2026</small>
@@ -974,6 +983,10 @@ function guideCopy(questionCode: string, spotName: string) {
 
 function displayCatalogLabel(value: string) {
   return value.replace(/_+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function cityBackgroundImage(assetKey: string) {
+  return cityBackgroundImages[assetKey] ?? cityBackgroundImages["berlin-after-dark"];
 }
 
 function toMessage(caught: unknown) {

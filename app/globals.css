@@ -453,7 +453,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .connecting-screen > h1 { margin-bottom: 9px; font-size: 25px; }
 .gate-tap-card { height: 255px; margin-top: 25px; padding: 18px; border-radius: 13px; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 46%, #514233 0, #332920 35%, #211b17 76%); color: #fff; box-shadow: 0 16px 34px rgba(43,31,23,.2); }
 .gate-tap-card > span { position: relative; z-index: 2; display: inline-flex; padding: 6px 9px; border: 1px solid rgba(210,176,125,.35); border-radius: 13px; color: #bea57e; font-size: 6px; letter-spacing: .12em; }
-.nfc-target { position: absolute; inset: 48px 0 38px; display: grid; place-items: center; }
+.nfc-target { position: absolute; inset: 48px 0 38px; border: 0; background: transparent; color: inherit; display: grid; place-items: center; cursor: pointer; }
 .nfc-target i { position: absolute; width: 118px; height: 118px; border: 1px solid rgba(213,181,134,.13); border-radius: 50%; animation: nfc-pulse 2.2s ease-out infinite; }
 .nfc-target i:nth-child(2) { width: 164px; height: 164px; animation-delay: .7s; }
 .nfc-target svg { position: absolute; width: 34px; height: 34px; color: rgba(224,199,161,.2); stroke-width: 1; }
@@ -604,7 +604,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 /* Figma 3차 prototype fidelity · section 202:737 / selected frame 312:1766 */
-:root { --figma-dark: #2c251f; --figma-paper: #f7f7f5; --figma-gold: #b07a36; --figma-green: #3f6e50; }
+:root { --figma-dark: #2c251f; --figma-paper: #f7f7f5; --figma-gold: #b07a36; --figma-green: #3f6e50; --journey-gutter: 15px; }
 body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .experience-shell { width: min(100%, 402px); }
 .app-header { height: 50px; font-size: 13px; font-weight: 500; }
@@ -842,7 +842,7 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .benefit-sheet h2 { margin: 6px 0 38px; font-size: 15px; line-height: 23px; }
 .benefit-sheet h3 { margin: 17px 0 9px; color: #5f5f59; font-size: 13px; font-weight: 500; }
 .benefit-sheet h3 b { color: var(--figma-gold); margin-right: 8px; }
-.coupon-card { min-height: 101px; padding: 14px 22px; border-radius: 10px; background: #efefec; display: flex; gap: 25px; align-items: center; }
+.coupon-card { min-height: 101px; padding: 14px 22px; border-radius: 10px; background: #efefec; display: flex; gap: 32px; align-items: center; }
 .coupon-card > span { color: var(--figma-gold); font-size: 42px; }
 .coupon-card small { font-size: 13px; color: #666; }
 .coupon-card strong { display: block; font-size: 20px; }
@@ -877,7 +877,7 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .passport-products { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
 .passport-products::-webkit-scrollbar { display: none; }
 .passport-products > div { width: 110px; height: 143px; flex: 0 0 110px; border: 1px solid #e5e5e3; border-radius: 10px; background: #fff; overflow: hidden; position: relative; }
-.passport-products img { width: 100%; height: 100%; object-fit: contain; }
+.passport-products img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.32); transform-origin: center; }
 .passport-footnote { position: absolute; left: 0; right: 0; bottom: 116px; color: #777; text-align: center; font-size: 11px; line-height: 16px; }
 .figma-my-passport .completion-reset { position: absolute; left: 0; right: 0; bottom: 8px; width: max-content; margin: auto; background: transparent; color: #111; }
 
@@ -1015,15 +1015,16 @@ body { min-height: 100svh; overflow-x: hidden; }
 
 .coupon-icon { width: 52px; height: 41px; flex: 0 0 52px; object-fit: contain; }
 .coupon-card > .coupon-icon { width: 52px; height: 41px; }
-.saved-coupon { padding-right: 0; grid-template-columns: 52px minmax(0, 1fr) 110px; }
+.saved-coupon { padding-right: 0; grid-template-columns: 80px minmax(0, 1fr) 110px; gap: 0; }
 .saved-coupon > .coupon-icon { width: 52px; height: 41px; }
 
 @media (max-width: 360px) {
+  :root { --journey-gutter: 12px; }
   .guide-stage .guide-copy { width: calc(100% - 144px); }
   .guide-stage .guide-character,
   .guide-stage .guide-character--pointer,
   .guide-stage .guide-character--presenter { width: auto; height: 144px; }
-  .saved-coupon { padding-right: 0; grid-template-columns: 44px minmax(0, 1fr) 86px; }
+  .saved-coupon { padding-right: 0; grid-template-columns: 62px minmax(0, 1fr) 86px; gap: 0; }
   .saved-coupon > .coupon-icon { width: 44px; height: 35px; }
 }
 
@@ -1128,3 +1129,33 @@ body { min-height: 100svh; overflow-x: hidden; }
 .connecting-screen,
 .destination-screen,
 .destination-screen .destination-image { animation: none; }
+
+/* Use one horizontal rhythm across questions, next steps, and bottom sheets. */
+.question-screen,
+.signal-screen,
+.frame42-screen,
+.tag-find-screen,
+.passport-offer-screen { padding-left: var(--journey-gutter); padding-right: var(--journey-gutter); }
+.question-screen .ai-guide-stage,
+.signal-screen .signal-guide,
+.frame42-screen .frame42-guide,
+.passport-offer-screen .passport-offer-guide { padding-left: 0; padding-right: 0; }
+.map-screen .app-header,
+.map-screen .map-guide,
+.product-reason-screen .app-header,
+.product-reason-screen .product-reason-hero,
+.map-screen .map-sheet,
+.product-reason-screen .product-reason-sheet { padding-left: var(--journey-gutter); padding-right: var(--journey-gutter); }
+
+/* Responsive result screens: keep content in flow instead of pinning it over cards. */
+.completion-heading .flight-line > i:last-child { display: none; }
+.destination-product,
+.destination-ribbon { box-shadow: none; filter: none; }
+.figma-souvenir-screen .completion-heading h1 { margin-top: clamp(24px, 5dvh, 46px); }
+.figma-souvenir-screen .completion-card { height: clamp(260px, 46dvh, 372px); margin-top: clamp(24px, 6dvh, 52px); }
+.benefit-sheet { min-height: 0; height: min(605px, calc(100% - 42px)); }
+.figma-my-passport { display: block; overflow-y: auto; }
+.passport-saved-title { margin: clamp(24px, 6dvh, 54px) 10px clamp(28px, 7dvh, 64px); flex: 0 0 auto; }
+.passport-products-title { margin-top: clamp(24px, 5dvh, 40px); }
+.passport-footnote { position: static; flex: 0 0 auto; margin: clamp(18px, 4dvh, 38px) 0 0; }
+.figma-my-passport .completion-reset { position: static; flex: 0 0 auto; margin: 24px auto max(8px, env(safe-area-inset-bottom, 0px)); }

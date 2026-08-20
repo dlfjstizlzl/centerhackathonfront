@@ -280,7 +280,11 @@ export default function HomePage() {
 
   const issueBoarding = () => run(async () => {
     if (!sessionId) return;
-    await mcmApi.createBoardingPass(sessionId);
+    try {
+      await mcmApi.createBoardingPass(sessionId);
+    } catch (caught) {
+      if (!(caught instanceof ApiError) || caught.code !== "BOARDING_PASS_ALREADY_EXISTS") throw caught;
+    }
     setPhase("boarding");
   });
 

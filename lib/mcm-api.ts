@@ -303,26 +303,40 @@ const demoSpots: JourneySpot[] = [
 
 export const nfcProducts: Product[] = [
   {
-    id: Number(process.env.NEXT_PUBLIC_NFC_BAG_1_PRODUCT_ID ?? process.env.NEXT_PUBLIC_DEMO_PRODUCT_ID ?? 1),
-    code: process.env.NEXT_PUBLIC_NFC_BAG_1_CODE ?? "STARK_BACKPACK",
-    name: process.env.NEXT_PUBLIC_NFC_BAG_1_NAME ?? "Stark Backpack",
-    category: "Backpack",
-    description: "MCM의 아이코닉한 Visetos 소재와 구조적인 실루엣이 돋보이는 블랙 백팩입니다.",
-    color: "Black",
-    material: "Structured",
-    silhouette: "Travel-ready",
-    imageUrl: "/images/travel-backpack.png",
+    id: 1,
+    code: "STARK_BACKPACK",
+    name: "Stark Backpack",
+    category: "BACKPACK",
+    description: "Visetos 모노그램과 실용적인 수납공간이 돋보이는 MCM의 아이코닉 백팩입니다.",
+    color: "BLACK",
+    material: "VISETOS",
+    silhouette: "STRUCTURED",
+    imageUrl: "https://images.mcmworldwide.com/i/mcmworldwide/MMKEAVE12BK001_01/stark-black-m?$w1000$&fmt=auto&qlt=default",
+    recommendable: true,
   },
   {
-    id: Number(process.env.NEXT_PUBLIC_NFC_BAG_2_PRODUCT_ID ?? 2),
-    code: process.env.NEXT_PUBLIC_NFC_BAG_2_CODE ?? "AREN_SHOPPER",
-    name: process.env.NEXT_PUBLIC_NFC_BAG_2_NAME ?? "Aren Shopper",
-    category: "Bag",
-    description: "아이코닉한 Visetos 소재와 여유로운 실루엣을 담은 코냑 컬러 쇼퍼백입니다.",
-    color: "Cognac",
-    material: "Visetos",
-    silhouette: "Everyday",
-    imageUrl: "/images/figma-product-2.png",
+    id: 2,
+    code: "AREN_CROSSBODY",
+    name: "Aren Crossbody",
+    category: "CROSSBODY",
+    description: "Visetos 모노그램과 나파 가죽 트림을 조합한 실용적인 데일리 크로스바디 백입니다.",
+    color: "COGNAC",
+    material: "VISETOS",
+    silhouette: "COMPACT",
+    imageUrl: "https://images.mcmworldwide.com/i/mcmworldwide/MMRFSTA05CO001_01?$pdp-large$",
+    recommendable: true,
+  },
+  {
+    id: 3,
+    code: "DIAMANT_3D_SHOULDER_BAG",
+    name: "Diamant 3D Shoulder Bag",
+    category: "SHOULDER_BAG",
+    description: "바이에른 다이아몬드를 입체적인 호보 실루엣으로 재해석한 카프스킨 숄더백입니다.",
+    color: "BLACK",
+    material: "CALF_LEATHER",
+    silhouette: "GEOMETRIC_HOBO",
+    imageUrl: "https://mcmworldwide.sa/cdn/shop/files/Diamant-3D-Shoulder-Bag-in-Visetos-Leather-Mix_cf9af2a3-808e-45ac-9df8-90f7aa4d12db.jpg?v=1753352688",
+    recommendable: true,
   },
 ];
 
@@ -385,10 +399,10 @@ export const mcmApi = {
     }
     const product = await request<Omit<Product, "code"> & { code?: string }>(`/api/products/${productId}`);
     const localProduct = nfcProducts.find((candidate) => candidate.id === productId);
+    if (localProduct) return { ...product, ...localProduct };
     return {
       ...product,
-      code: product.code ?? localProduct?.code ?? `PRODUCT_${productId}`,
-      imageUrl: product.imageUrl?.includes("example.com") ? localProduct?.imageUrl ?? null : product.imageUrl,
+      code: product.code ?? `PRODUCT_${productId}`,
     };
   },
 
@@ -410,9 +424,9 @@ export const mcmApi = {
           passportSessionId: sessionId,
           cityCode: "BERLIN_AFTERDARK_NOMAD",
           cityCodeName: "Berlin Afterdark Nomad",
-          recommendedProductCode: "STARK_BACKPACK",
-          recommendedProductName: "Stark Backpack",
-          recommendedProductImageUrl: "/images/travel-backpack.png",
+          recommendedProductCode: nfcProducts[0].code,
+          recommendedProductName: nfcProducts[0].name,
+          recommendedProductImageUrl: nfcProducts[0].imageUrl,
           styleMood: "AFTERDARK_MOVEMENT",
           styleMoodName: "Afterdark Movement",
           backgroundCode: "BERLIN_AFTER_DARK",

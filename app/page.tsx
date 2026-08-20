@@ -655,7 +655,7 @@ function TaggedProductScreen({ product, onClose }: { product: Product; onClose: 
 
   return (
     <div className="screen product-reason-screen prototype-product-event">
-      <Header title="AI Guide" light />
+      <Header title="AI Guide" light onBack={() => setSheetExpanded((expanded) => !expanded)} />
       <section className="product-reason-hero guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter pose="pointer" /></section>
       <section className={`product-reason-sheet interactive-bottom-sheet ${sheetExpanded ? "is-expanded" : "is-collapsed"}`}>
         <BottomSheetHandle expanded={sheetExpanded} onExpandedChange={setSheetExpanded} label="태그 결과" />
@@ -685,47 +685,51 @@ function JourneyMap({ spots, stamps, tagged, taggedProductCount, requiredComplet
   const [sheetExpanded, setSheetExpanded] = useState(true);
   const nextSpotIndex = spots.findIndex((spot) => !stamps.includes(spot.id));
   const nextSpot = nextSpotIndex >= 0 ? spots[nextSpotIndex] : undefined;
-  const guideMessage = requiredComplete
+  const latestCompletedSpot = [...spots].reverse().find((spot) => stamps.includes(spot.id));
+  const stampGuideMessage = requiredComplete
     ? "모든 스탬프를 다 모았어요. 이제 MCM Passport를 발급받을 수 있어요."
     : stamps.length === 0
       ? "아직 모은 Journey Stamp가 없어요. 각 Spot을 눌러 디테일 여정을 시작해주세요."
       : `지금까지 ${stamps.length}개의 Journey Stamp를 모았어요. 다음은 ${nextSpot?.name ?? "다음 Spot"}이에요.`;
+  const nextGuideMessage = requiredComplete
+    ? "모든 여정을 완료했어요. 이제 고객님만의 MCM Passport를 발급받아볼게요."
+    : latestCompletedSpot && nextSpot
+      ? `${latestCompletedSpot.name} 여정을 즐기셨어요. 다음은 ${nextSpot.name}으로 가볼게요.`
+      : stampGuideMessage;
   return (
     <div className="screen map-screen">
-      <Header title="AI Guide" light />
-      <section className="map-guide guide-stage"><div className="guide-copy"><small>AI GUIDE · AMY</small><p>{guideMessage}</p></div><GuideCharacter pose="presenter" /></section>
+      <Header title="AI Guide" light onBack={() => setSheetExpanded((expanded) => !expanded)} />
+      <section className="map-guide guide-stage"><div className="guide-copy"><small>AI GUIDE · AMY</small><p>{sheetExpanded ? stampGuideMessage : nextGuideMessage}</p></div><GuideCharacter pose="presenter" /></section>
+      <section className="journey-next-stage" aria-hidden={sheetExpanded}>
+        <div className="journey-next-status"><span>현재 선택</span><small>MY JOURNEY · {stamps.length + (tagged ? 1 : 0)} / {spots.length + 1} SIGNALS</small></div>
+        <span className="journey-next-label">{requiredComplete ? "JOURNEY COMPLETE" : "NEXT STEP"}</span>
+        {nextSpot ? (
+          <>
+            <div className="map-next-card"><span>{String(nextSpot.sequence).padStart(2, "0")}</span><strong>{nextSpot.name}</strong><i /><p>{nextSpot.description}</p></div>
+            <button className="map-next-button" disabled={sheetExpanded} onClick={() => onNextSpot(nextSpotIndex)}>다음 spot으로 이동 <ArrowRight /></button>
+          </>
+        ) : (
+          <>
+            <div className="map-next-card is-complete"><Stamp /><strong>모든 Journey Stamp를 모았어요.</strong><p>이제 고객님의 선택으로 완성된 MCM Passport를 발급받을 수 있어요.</p></div>
+            <button className="map-next-button" disabled={sheetExpanded} onClick={onBoard}>MCM Passport 발급받기 <ArrowRight /></button>
+          </>
+        )}
+      </section>
       <section className={`map-sheet interactive-bottom-sheet ${sheetExpanded ? "is-expanded" : "is-collapsed"}`}>
         <BottomSheetHandle expanded={sheetExpanded} onExpandedChange={setSheetExpanded} label="Journey Stamp 현황" />
-        {sheetExpanded ? (
-          <div className="map-sheet-expanded-content">
-            <small>MY JOURNEY · {stamps.length + (tagged ? 1 : 0)} / {spots.length + 1} SIGNALS</small>
-            <h2>SPOT별 스탬프 현황</h2>
-            <div className="spot-list">
-              {spots.map((spot, index) => {
-                const complete = stamps.includes(spot.id);
-                const completionLabels = ["Mood selected", "Texture signal", "Motion signal", "배경 무드 발견"];
-                return <button className={complete ? "complete" : ""} key={spot.id} onClick={() => onSpot(index)}><div><strong>{spot.name}</strong><span>{complete ? `완료 · ${completionLabels[index] ?? "Stamp collected"}` : index === nextSpotIndex ? `NEXT · ${completionLabels[index] ?? "다음 감각 발견"}` : spot.description}</span></div>{complete ? <Stamp /> : <ChevronRight />}</button>;
-              })}
-              <button className={`product-list-row ${tagged ? "complete" : ""}`} onClick={onTag}><div><strong>Product Tagging</strong><span>{tagged ? "완료 · " : ""}{taggedProductCount} {taggedProductCount === 1 ? "product" : "products"} saved</span></div>{tagged ? <Stamp /> : <ScanLine />}</button>
-            </div>
-            {requiredComplete && <button className="primary-button map-boarding" onClick={onBoard}>MCM Passport 발급받기 <ArrowRight /></button>}
+        <div className="map-sheet-expanded-content">
+          <small>MY JOURNEY · {stamps.length + (tagged ? 1 : 0)} / {spots.length + 1} SIGNALS</small>
+          <h2>SPOT별 스탬프 현황</h2>
+          <div className="spot-list">
+            {spots.map((spot, index) => {
+              const complete = stamps.includes(spot.id);
+              const completionLabels = ["Mood selected", "Texture signal", "Motion signal", "배경 무드 발견"];
+              return <button className={complete ? "complete" : ""} key={spot.id} onClick={() => onSpot(index)}><div><strong>{spot.name}</strong><span>{complete ? `완료 · ${completionLabels[index] ?? "Stamp collected"}` : index === nextSpotIndex ? `NEXT · ${completionLabels[index] ?? "다음 감각 발견"}` : spot.description}</span></div>{complete ? <Stamp /> : <ChevronRight />}</button>;
+            })}
+            <button className={`product-list-row ${tagged ? "complete" : ""}`} onClick={onTag}><div><strong>Product Tagging</strong><span>{tagged ? "완료 · " : ""}{taggedProductCount} {taggedProductCount === 1 ? "product" : "products"} saved</span></div>{tagged ? <Stamp /> : <ScanLine />}</button>
           </div>
-        ) : (
-          <div className="map-sheet-collapsed-content">
-            <small>{requiredComplete ? "JOURNEY COMPLETE" : "NEXT STEP"}</small>
-            {nextSpot ? (
-              <>
-                <div className="map-next-card"><span>{String(nextSpot.sequence).padStart(2, "0")}</span><strong>{nextSpot.name}</strong><i /><p>{nextSpot.description}</p></div>
-                <button className="primary-button map-next-button" onClick={() => onNextSpot(nextSpotIndex)}>다음 spot으로 이동 <ArrowRight /></button>
-              </>
-            ) : (
-              <>
-                <div className="map-next-card is-complete"><Stamp /><strong>모든 Journey Stamp를 모았어요.</strong><p>이제 고객님의 선택으로 완성된 MCM Passport를 발급받을 수 있어요.</p></div>
-                <button className="primary-button map-next-button" onClick={onBoard}>MCM Passport 발급받기 <ArrowRight /></button>
-              </>
-            )}
-          </div>
-        )}
+          {requiredComplete && <button className="primary-button map-boarding" onClick={onBoard}>MCM Passport 발급받기 <ArrowRight /></button>}
+        </div>
       </section>
     </div>
   );

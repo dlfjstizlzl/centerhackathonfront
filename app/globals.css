@@ -1030,8 +1030,7 @@ body { min-height: 100svh; overflow-x: hidden; }
 /* Functional bottom sheets: tap the handle or drag it vertically. */
 .interactive-bottom-sheet {
   box-shadow: 0 -12px 32px rgba(22,17,13,.16);
-  transition: transform .38s cubic-bezier(.22,.8,.3,1);
-  will-change: transform;
+  transition: transform .2s ease-out;
 }
 .sheet-handle,
 .map-sheet .sheet-handle {
@@ -1061,11 +1060,14 @@ body { min-height: 100svh; overflow-x: hidden; }
   overflow-y: auto;
 }
 .map-sheet.is-expanded { transform: translateY(0); }
-.map-sheet.is-collapsed { transform: translateY(calc(100% - min(340px, 44dvh))); overflow: hidden; }
-.map-sheet-expanded-content > small,
-.map-sheet-collapsed-content > small { display: block; color: var(--figma-gold); font-size: 11px; line-height: 16px; letter-spacing: .1px; }
+.map-sheet.is-collapsed { transform: translateY(100%); overflow: hidden; pointer-events: none; }
+.map-sheet-expanded-content > small { display: block; color: var(--figma-gold); font-size: 11px; line-height: 16px; letter-spacing: .1px; }
 .map-sheet-expanded-content h2 { margin: 5px 10px 28px; font-size: 13px; line-height: 18px; }
-.map-sheet-collapsed-content { animation: prototype-fade-in .24s ease-out both; }
+.journey-next-stage { position: relative; z-index: 0; padding: 0 15px max(28px, env(safe-area-inset-bottom, 0px)); color: #fff; }
+.journey-next-status { margin: 0 10px 25px; display: grid; gap: 5px; }
+.journey-next-status > span { font-size: 15px; line-height: 23px; }
+.journey-next-status > small { color: var(--figma-gold); font-size: 11px; line-height: 16px; }
+.journey-next-label { display: block; margin: 0 10px 10px; font-size: 15px; line-height: 23px; }
 .map-next-card { min-height: 174px; margin-top: 10px; padding: 15px; border: 1.5px solid #a98455; border-radius: 10px; background: linear-gradient(112deg,#3c3937 0,#2c251f 35%,#332a22 78%); color: #fff; }
 .map-next-card > span { color: var(--figma-gold); font-size: 13px; }
 .map-next-card > strong { display: block; margin-top: 4px; font-size: 20px; line-height: 26px; }
@@ -1075,7 +1077,9 @@ body { min-height: 100svh; overflow-x: hidden; }
 .map-next-card.is-complete > svg { grid-row: 1 / 3; width: 40px; height: 40px; color: var(--figma-gold); }
 .map-next-card.is-complete > strong { margin: 0; font-size: 15px; line-height: 23px; }
 .map-next-card.is-complete > p { grid-column: 2; }
-.map-next-button { min-height: 56px; margin-top: 16px; border-radius: 10px; font-size: 18px; }
+.map-next-button { width: max-content; min-height: 56px; margin: 28px auto 0; padding: 0; border: 0; background: transparent; color: #fff; display: flex; align-items: center; gap: 14px; font-size: 20px; }
+.map-next-button:disabled { pointer-events: none; }
+.map-next-button svg { width: 22px; }
 
 .product-reason-screen { position: relative; display: block; overflow: hidden; }
 .product-reason-sheet {
@@ -1085,7 +1089,7 @@ body { min-height: 100svh; overflow-x: hidden; }
   overflow-y: auto;
 }
 .product-reason-sheet.is-expanded { transform: translateY(0); }
-.product-reason-sheet.is-collapsed { transform: translateY(calc(100% - 132px)); overflow: hidden; }
+.product-reason-sheet.is-collapsed { transform: translateY(100%); overflow: hidden; pointer-events: none; }
 .product-reason-sheet-content > small { color: #5f5f59; font-size: 11px; }
 .product-reason-sheet-content { animation: prototype-fade-in .24s ease-out both; }
 .tagged-close { position: absolute; margin: 0; }
@@ -1095,13 +1099,13 @@ body { min-height: 100svh; overflow-x: hidden; }
   overflow: hidden;
 }
 .benefit-overlay.is-collapsed { background: transparent; pointer-events: none; }
-.benefit-overlay.is-collapsed .benefit-sheet { pointer-events: auto; transform: translateY(calc(100% - 62px)); }
+.benefit-overlay.is-collapsed .benefit-sheet { transform: translateY(100%); }
 .benefit-overlay.is-expanded .benefit-sheet { transform: translateY(0); }
 .benefit-sheet {
   max-height: calc(100% - 42px);
   overflow-y: auto;
   animation: none;
-  transition: transform .38s cubic-bezier(.22,.8,.3,1);
+  transition: transform .2s ease-out;
 }
 .benefit-sheet .sheet-handle { position: sticky; top: -20px; margin-top: -20px; background: var(--figma-paper); }
 .benefit-sheet-content > small { color: #5f5f59; font-size: 11px; }
@@ -1111,3 +1115,16 @@ body { min-height: 100svh; overflow-x: hidden; }
   .map-next-card { min-height: 150px; }
   .map-next-button { margin-top: 10px; }
 }
+
+/* Dark screens change immediately; motion is reserved for the sheet itself. */
+.question-screen,
+.signal-screen,
+.tag-find-screen,
+.map-screen,
+.frame42-screen,
+.product-reason-screen,
+.passport-offer-screen,
+.boarding-screen,
+.connecting-screen,
+.destination-screen,
+.destination-screen .destination-image { animation: none; }

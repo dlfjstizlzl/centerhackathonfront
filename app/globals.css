@@ -977,3 +977,45 @@ body { min-height: 100svh; overflow-x: hidden; }
   .passport-offer-card { min-height: 220px; }
   .saved-coupon { padding-inline: 12px; grid-template-columns: 36px 1fr 74px; }
 }
+
+/* Keep Amy in one predictable stage slot and reserve copy space so speech bubbles never cover her. */
+.guide-stage { position: relative; }
+.guide-stage .guide-copy {
+  position: relative;
+  z-index: 2;
+  left: auto;
+  top: auto;
+  width: min(236px, calc(100% - 154px));
+  max-width: none;
+  margin-left: 0;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+.guide-stage .guide-character,
+.guide-stage .guide-character--pointer,
+.guide-stage .guide-character--presenter {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: 154px;
+  margin: 0;
+  transform: none;
+  object-fit: contain;
+  object-position: right bottom;
+}
+
+.coupon-icon { width: 52px; height: 41px; flex: 0 0 52px; object-fit: contain; }
+.coupon-card > .coupon-icon { width: 52px; height: 41px; }
+.saved-coupon { grid-template-columns: 52px 1fr 88px; }
+.saved-coupon > .coupon-icon { width: 52px; height: 41px; }
+
+@media (max-width: 360px) {
+  .guide-stage .guide-copy { width: calc(100% - 144px); }
+  .guide-stage .guide-character,
+  .guide-stage .guide-character--pointer,
+  .guide-stage .guide-character--presenter { width: auto; height: 144px; }
+  .saved-coupon { grid-template-columns: 44px 1fr 74px; }
+  .saved-coupon > .coupon-icon { width: 44px; height: 35px; }
+}

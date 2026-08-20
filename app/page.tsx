@@ -410,7 +410,7 @@ function Welcome({ connected, onStart, onQr }: { connected: boolean; onStart: ()
         <div className="passport-seal"><Compass /><span>STYLE<br />JOURNEY</span></div>
         <span className="passport-number">MCM · 26 0820 · S1</span>
       </div>
-      <div className="guide-bubble"><GuideCharacter pose="presenter" /><div><small>AI GUIDE · AMY</small><p>“설문 대신 대화로,<br />고객님의 취향을 함께 발견할게요.”</p></div></div>
+      <div className="guide-bubble guide-stage"><GuideCharacter pose="presenter" /><div className="guide-copy"><small>AI GUIDE · AMY</small><p>“설문 대신 대화로,<br />고객님의 취향을 함께 발견할게요.”</p></div></div>
       <button className="text-cta" onClick={onStart}>여정 시작하기 <ArrowRight /></button>
       <button className="qr-entry" onClick={onQr}><QrCode /> NFC가 인식되지 않나요? QR로 열기</button>
     </div>
@@ -453,8 +453,8 @@ function QuestionScreen({ spot, question, answeredCount, totalQuestions, selecte
     <div className="screen question-screen latest-guide-screen">
       <Header title="AI Guide" light />
       <div className="guide-progress"><span>{guide.eyebrow}</span><div><i style={{ width: `${Math.max(8, ((answeredCount + 1) / Math.max(totalQuestions, 1)) * 100)}%` }} /></div><small>{answeredCount + 1}/{Math.max(totalQuestions, 1)}</small></div>
-      <section className="ai-guide-stage">
-        <div className="ai-message"><small>AI GUIDE · AMY</small><p>{guide.message}</p></div>
+      <section className="ai-guide-stage guide-stage">
+        <div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{guide.message}</p></div>
         <GuideCharacter pose="pointer" />
       </section>
       <div className="question-context"><span>{guide.label}</span><FlightLine /></div>
@@ -483,7 +483,7 @@ function NextStepScreen({ title, message, button, onContinue }: {
   return (
     <div className="screen signal-screen">
       <Header title="AI Guide" light />
-      <section className="signal-guide"><div><small>AI GUIDE · AMY</small><p>{message}</p></div><GuideCharacter pose="pointer" /></section>
+      <section className="signal-guide guide-stage"><div className="guide-copy"><small>AI GUIDE · AMY</small><p>{message}</p></div><GuideCharacter pose="pointer" /></section>
       <section className="signal-sheet">
         <div className="sheet-handle" />
         <small>현재 상태</small>
@@ -510,8 +510,8 @@ function SpotDetailScreen({ spot, previousSpotName, complete, signalCount, total
   return (
     <div className="screen frame42-screen">
       <Header title="AI Guide" onBack={onMap} light />
-      <section className="frame42-guide">
-        <div className="ai-message"><small>AI GUIDE · AMY</small><p>{complete ? `${spot.name} 여정을 이미 완료했어요. 기록된 내용을 다시 확인해볼까요?` : guideMessage}</p></div>
+      <section className="frame42-guide guide-stage">
+        <div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{complete ? `${spot.name} 여정을 이미 완료했어요. 기록된 내용을 다시 확인해볼까요?` : guideMessage}</p></div>
         <GuideCharacter pose="pointer" />
       </section>
       <section className="frame42-status"><span>현재 상태</span><small>MY JOURNEY · {signalCount} / {totalSignals} SIGNALS</small></section>
@@ -589,7 +589,7 @@ function TaggedProductScreen({ product, onClose }: { product: Product; onClose: 
   return (
     <div className="screen product-reason-screen prototype-product-event">
       <Header title="AI Guide" light />
-      <section className="product-reason-hero"><div className="ai-message"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter pose="pointer" /></section>
+      <section className="product-reason-hero guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter pose="pointer" /></section>
       <section className="product-reason-sheet">
         <small>TAGGED PRODUCT · SIGNAL 01</small>
         <div className="mini-tagged-product"><Image src={product.imageUrl ?? "/images/travel-backpack.png"} alt={product.name} width={82} height={82} /><div><strong>{product.name}</strong><span>{product.color} · {product.material} · {product.silhouette}</span></div><Check /></div>
@@ -619,7 +619,7 @@ function JourneyMap({ spots, stamps, tagged, requiredComplete, onSpot, onTag, on
   return (
     <div className="screen map-screen">
       <Header title="AI Guide" light />
-      <section className="map-guide"><div><small>AI GUIDE · AMY</small><p>{guideMessage}</p></div><GuideCharacter pose="presenter" /></section>
+      <section className="map-guide guide-stage"><div className="guide-copy"><small>AI GUIDE · AMY</small><p>{guideMessage}</p></div><GuideCharacter pose="presenter" /></section>
       <section className="map-sheet">
         <div className="sheet-handle" />
         <small>MY JOURNEY · {stamps.length + (tagged ? 1 : 0)} / {spots.length + 1} SIGNALS</small>
@@ -642,7 +642,7 @@ function PassportOffer({ onIssue, onBack }: { onIssue: () => void; onBack: () =>
   return (
     <div className="screen passport-offer-screen">
       <Header title="AI Guide" light />
-      <section className="passport-offer-guide"><div className="ai-message"><small>AI GUIDE · AMY</small><p>이제 MCM PASSPORT를 발급받을 수 있어요.<br />MCM PASSPORT를 화면으로 받아볼까요?</p></div><GuideCharacter pose="presenter" /></section>
+      <section className="passport-offer-guide guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>이제 MCM PASSPORT를 발급받을 수 있어요.<br />MCM PASSPORT를 화면으로 받아볼까요?</p></div><GuideCharacter pose="presenter" /></section>
       <div className="passport-offer-card figma-passport-ticket">
         <small>STYLE JOURNEY<br />PASSPORT</small>
         <div className="passport-chip" aria-hidden="true"><i /><i /><i /></div>
@@ -670,7 +670,7 @@ function Boarding({ stampCount, onBack, onContinue }: { stampCount: number; onBa
         <div className="boarding-stamp">READY TO<br />BOARD</div>
         <div className="boarding-qr"><QrCode /><Plane /><small>SCAN TO OPEN<br />YOUR PASSPORT</small></div>
       </div>
-      <section className="boarding-guide"><div className="ai-message"><small>AI GUIDE · AMY</small><p>여정이 완료됐어요.<br />Style Spot에서 AI Guide가 정리한 고객님의<br />City Code를 확인해보세요.</p></div><GuideCharacter pose="presenter" /></section>
+      <section className="boarding-guide guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>여정이 완료됐어요.<br />Style Spot에서 AI Guide가 정리한 고객님의<br />City Code를 확인해보세요.</p></div><GuideCharacter pose="presenter" /></section>
       <button className="text-cta boarding-connect" onClick={onContinue}>Style spot으로 이동 <ArrowRight /></button>
     </div>
   );
@@ -771,7 +771,7 @@ function Completion({ souvenir, onSave }: { souvenir: JourneySouvenir; portraitS
       <SouvenirCard souvenir={souvenir} />
       <p className="souvenir-login-note">로그인하면 오늘의 결과를 저장하고, 고객님에게 어울리는 제품 추천과 Souvenir Benefit을 받을 수 있어요.</p>
       <button className="text-cta souvenir-save" onClick={() => setBenefitOpen(true)}>My Passport 가기 <ArrowRight /></button>
-      {benefitOpen && <div className="benefit-overlay" role="dialog" aria-modal="true" aria-label="Souvenir benefit"><section className="benefit-sheet"><div className="sheet-handle" /><small>Souvenir benefit</small><h2>오늘의 City Code를 기반으로 준비된 고객님만의<br />Private Benefit입니다.</h2><h3><b>01</b> 추천 제품 전용 할인 쿠폰</h3><div className="coupon-card"><span>✂︎</span><div><small>SOUVENIR COUPON</small><strong>10% OFF</strong><p>추천 제품에 사용 가능</p></div></div><h3><b>02</b> City Code 기반 추가 제품 추천</h3><div className="benefit-tags"><span>Black tone</span><span>Wide silhouette</span><span>Metallic detail</span><span>Urban</span></div><h3><b>03</b> 오늘의 Journey 결과 다시 보기</h3><p className="benefit-note">로그인하면 My Passport에 결과가 안전하게 저장되며,<br />고객님에게 더 맞는 추천을 받아보실 수 있습니다.</p><button className="primary-button" onClick={onSave}>로그인 하고 My Passport에 저장</button><button className="benefit-skip" onClick={onSave}>로그인 없이 계속 여행하기</button></section></div>}
+      {benefitOpen && <div className="benefit-overlay" role="dialog" aria-modal="true" aria-label="Souvenir benefit"><section className="benefit-sheet"><div className="sheet-handle" /><small>Souvenir benefit</small><h2>오늘의 City Code를 기반으로 준비된 고객님만의<br />Private Benefit입니다.</h2><h3><b>01</b> 추천 제품 전용 할인 쿠폰</h3><div className="coupon-card"><CouponIcon /><div><small>SOUVENIR COUPON</small><strong>10% OFF</strong><p>추천 제품에 사용 가능</p></div></div><h3><b>02</b> City Code 기반 추가 제품 추천</h3><div className="benefit-tags"><span>Black tone</span><span>Wide silhouette</span><span>Metallic detail</span><span>Urban</span></div><h3><b>03</b> 오늘의 Journey 결과 다시 보기</h3><p className="benefit-note">로그인하면 My Passport에 결과가 안전하게 저장되며,<br />고객님에게 더 맞는 추천을 받아보실 수 있습니다.</p><button className="primary-button" onClick={onSave}>로그인 하고 My Passport에 저장</button><button className="benefit-skip" onClick={onSave}>로그인 없이 계속 여행하기</button></section></div>}
     </div>
   );
 }
@@ -781,7 +781,7 @@ function Passport({ souvenir, onAccount, onReset }: { souvenir: JourneySouvenir;
     <div className="screen completion-screen latest-passport-screen my-passport-screen figma-my-passport">
       <Header title="MCM PASSPORT" />
       <div className="passport-saved-title"><Check /><div><h1>My passport에 저장 완료!</h1><p>오늘의 여정 결과와 혜택이 저장되었습니다.</p></div></div>
-      <section className="saved-coupon"><span>✂︎</span><div><small>SOUVENIR COUPON</small><strong>10% OFF</strong><p>추천 제품에 사용 가능</p></div><div className="coupon-download"><BookmarkCheck /><small>쿠폰 다운로드</small></div></section>
+      <section className="saved-coupon"><CouponIcon /><div><small>SOUVENIR COUPON</small><strong>10% OFF</strong><p>추천 제품에 사용 가능</p></div><div className="coupon-download"><BookmarkCheck /><small>쿠폰 다운로드</small></div></section>
       <div className="passport-products-title"><h2>City Code에 더 어울리는 제품</h2><button onClick={onAccount}>전체 보기 <ChevronRight /></button></div>
       <div className="passport-products">{[1,2,3,4].map((number) => <div key={number}><Image src={`/images/figma-product-${number}.png`} alt={`${souvenir.cityCodeName} 추천 제품 ${number}`} fill sizes="110px" loading="eager" /></div>)}</div>
       <p className="passport-footnote">오늘의 Journey를 다시 보고싶으신가요?<br />My Passport → My Journey에서 확인할 수 있어요.</p>
@@ -833,6 +833,10 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
 function GuideCharacter({ pose }: { pose: "pointer" | "presenter" }) {
   const isPointer = pose === "pointer";
   return <Image className={`guide-character guide-character--${pose}`} src={`/images/amy-guide-${pose}.png`} alt="" width={isPointer ? 150 : 124} height={154} loading="eager" aria-hidden="true" />;
+}
+
+function CouponIcon() {
+  return <Image className="coupon-icon" src="/images/figma-coupon-icon.svg" alt="" width={52} height={41} aria-hidden="true" />;
 }
 
 function FlightLine() {

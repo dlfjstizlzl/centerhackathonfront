@@ -372,7 +372,7 @@ export default function HomePage() {
         )}
         {phase === "journey" && journeyView === "checkpoint" && <NextStepScreen title="Origin Gate" message="오늘의 무드가 Passport에 기록됐어요. Origin Gate부터 여정을 시작해볼게요." button="Origin Gate로 이동" onContinue={() => openSpot(0)} />}
         {phase === "journey" && journeyView === "tag" && <TagYourFind onContinue={() => setJourneyView("map")} onTag={tagProduct} />}
-        {phase === "journey" && journeyView === "product" && <TaggedProductScreen product={taggedProduct ?? demoProduct} onClose={closeTaggedProduct} />}
+        {phase === "journey" && journeyView === "product" && <TaggedProductScreen product={taggedProduct ?? demoProduct} onBack={() => setJourneyView("tag")} onClose={closeTaggedProduct} />}
         {phase === "journey" && activeSpot && journeyView === "spot-detail" && (
           <SpotDetailScreen spot={activeSpot} previousSpotName={spots[activeSpotIndex - 1]?.name} complete={stamps.includes(activeSpot.id)} signalCount={stamps.length + (tagged ? 1 : 0)} totalSignals={spots.length + 1} onStart={() => setJourneyView("question")} onMap={() => setJourneyView("map")} />
         )}
@@ -650,12 +650,12 @@ function TagYourFind({ onContinue, onTag }: { onContinue: () => void; onTag: (pr
   );
 }
 
-function TaggedProductScreen({ product, onClose }: { product: Product; onClose: () => void }) {
+function TaggedProductScreen({ product, onBack, onClose }: { product: Product; onBack: () => void; onClose: () => void }) {
   const [sheetExpanded, setSheetExpanded] = useState(true);
 
   return (
     <div className="screen product-reason-screen prototype-product-event">
-      <Header title="AI Guide" light onBack={() => setSheetExpanded((expanded) => !expanded)} />
+      <Header title="AI Guide" light onBack={onBack} />
       <section className="product-reason-hero guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter pose="pointer" /></section>
       <section className={`product-reason-sheet interactive-bottom-sheet ${sheetExpanded ? "is-expanded" : "is-collapsed"}`}>
         <BottomSheetHandle expanded={sheetExpanded} onExpandedChange={setSheetExpanded} label="태그 결과" />

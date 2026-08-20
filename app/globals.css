@@ -1030,7 +1030,7 @@ body { min-height: 100svh; overflow-x: hidden; }
 /* Functional bottom sheets: tap the handle or drag it vertically. */
 .interactive-bottom-sheet {
   box-shadow: 0 -12px 32px rgba(22,17,13,.16);
-  transition: transform .2s ease-out;
+  transition: transform .35s ease-out;
 }
 .sheet-handle,
 .map-sheet .sheet-handle {
@@ -1105,7 +1105,7 @@ body { min-height: 100svh; overflow-x: hidden; }
   max-height: calc(100% - 42px);
   overflow-y: auto;
   animation: none;
-  transition: transform .2s ease-out;
+  transition: transform .35s ease-out;
 }
 .benefit-sheet .sheet-handle { position: sticky; top: -20px; margin-top: -20px; background: var(--figma-paper); }
 .benefit-sheet-content > small { color: #5f5f59; font-size: 11px; }

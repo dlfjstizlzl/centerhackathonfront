@@ -894,8 +894,8 @@ body { min-height: 100svh; overflow-x: hidden; }
 .screen { min-height: 0; padding-bottom: max(18px, env(safe-area-inset-bottom, 0px)); }
 
 .flight-line { gap: 3px; }
-.flight-line b { width: 20px; height: 20px; padding: 0; display: grid; place-items: center; transform: rotate(7deg); }
-.flight-line b svg { width: 15px; height: 15px; stroke-width: 1.45; }
+.flight-line b { width: 23px; height: 22px; padding: 0; display: grid; place-items: center; }
+.flight-line b svg { width: 23px; height: 22px; display: block; }
 
 .welcome-screen .guide-character--presenter { width: 120px; }
 .ai-guide-stage .guide-character--pointer { width: 150px; right: -5px; }

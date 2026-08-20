@@ -836,7 +836,7 @@ function GuideCharacter({ pose }: { pose: "pointer" | "presenter" }) {
 }
 
 function FlightLine() {
-  return <span className="flight-line" aria-hidden="true"><i /><b><Plane /></b><i /></span>;
+  return <span className="flight-line" aria-hidden="true"><i /><b><svg width="23" height="22" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.2753 10.5827C22.2753 11.5118 21.5273 12.2599 20.606 12.252L14.4801 12.252L8.91314 21.1575L6.68479 21.1654L9.48007 12.2599L3.33834 12.2599L1.67693 14.4882L-0.00023906 14.4803L1.11787 10.5906L-0.000238723 6.68505L1.6848 6.6693L3.36196 8.92915L9.45645 8.92915L6.6848 1.89164e-05L8.91314 0.00789287L14.4801 8.9134L20.606 8.9134C21.5037 8.89765 22.2911 9.68505 22.2753 10.5827Z" fill="#B07A36" /></svg></b><i /></span>;
 }
 
 function guideCopy(questionCode: string, spotName: string) {

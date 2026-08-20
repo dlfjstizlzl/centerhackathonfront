@@ -5,6 +5,8 @@ export type NfcPayload = {
   productId?: number;
 };
 
+export const nfcUnavailableMessage = "현재 환경에서는 NFC 기능을 사용할 수 없습니다. Android Chrome과 NFC 지원 기기에서 이용해주세요.";
+
 type NdefRecordLike = {
   recordType: string;
   mediaType?: string;
@@ -67,7 +69,7 @@ export async function scanNfcTag(options: {
   onError: (message: string) => void;
 }) {
   const Reader = getNdefReader();
-  if (!Reader) throw new Error("이 기기에서는 Web NFC를 지원하지 않아요. Android Chrome에서 이용해주세요.");
+  if (!Reader) throw new Error(nfcUnavailableMessage);
 
   const reader = new Reader();
   reader.addEventListener("reading", (event) => {
@@ -83,7 +85,7 @@ export async function scanNfcTag(options: {
 
 export async function writeNfcTag(url: string) {
   const Reader = getNdefReader();
-  if (!Reader) throw new Error("이 기기에서는 NFC 기록을 지원하지 않아요. Android Chrome에서 열어주세요.");
+  if (!Reader) throw new Error("현재 환경에서는 NFC 기록 기능을 사용할 수 없습니다. Android Chrome과 NFC 지원 기기에서 이용해주세요.");
   const reader = new Reader();
   await reader.write({ records: [{ recordType: "url", data: url }] });
 }

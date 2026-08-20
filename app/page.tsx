@@ -37,17 +37,17 @@ import { isWebNfcSupported, NfcPayload, parseNfcUrl, scanNfcTag } from "@/lib/nf
 type Phase = "welcome" | "consent" | "journey" | "boarding" | "connecting" | "analysis" | "destination" | "portrait" | "completion" | "passport";
 type JourneyView = "question" | "checkpoint" | "tag" | "product" | "map" | "spot-detail" | "passport-offer";
 type EntryMethod = "nfc" | "qr";
-const storageKeyPrefix = isLiveApi ? "mcm-passport-v4-live" : "mcm-passport-v4-demo";
+const storageKeyPrefix = isLiveApi ? "mcm-passport-v5-live" : "mcm-passport-v5-demo";
 const getStorageKey = () => `${storageKeyPrefix}:${getPassportCardUid()}`;
 const sessionSchemaKey = "mcm-passport-session-schema";
-const currentSessionSchema = "journey-details-v4";
+const currentSessionSchema = "journey-details-v5";
 
 type PersistedState = {
   phase: Phase;
   journeyView: JourneyView;
   sessionId: number | null;
   activeSpotIndex: number;
-  answers: Record<number, number>;
+  answers: Record<number, number | null>;
   stamps: number[];
   tagged: boolean;
   taggedProductId: number | null;
@@ -68,7 +68,7 @@ export default function HomePage() {
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [spots, setSpots] = useState<JourneySpot[]>([]);
   const [activeSpotIndex, setActiveSpotIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [answers, setAnswers] = useState<Record<number, number | null>>({});
   const [stamps, setStamps] = useState<number[]>([]);
   const [tagged, setTagged] = useState(false);
   const [taggedProductId, setTaggedProductId] = useState<number | null>(null);
@@ -216,10 +216,10 @@ export default function HomePage() {
     setJourneyView("question");
   });
 
-  const chooseAnswer = (optionId: number, answerText?: string) => run(async () => {
+  const chooseAnswer = (optionId?: number, answerText?: string) => run(async () => {
     if (!sessionId || !activeSpot || !activeQuestion) return;
     await mcmApi.saveGuideResponse(sessionId, activeQuestion.id, optionId, answerText);
-    const nextAnswers = { ...answers, [activeQuestion.id]: optionId };
+    const nextAnswers = { ...answers, [activeQuestion.id]: optionId ?? null };
     setAnswers(nextAnswers);
 
     const requiredQuestionsComplete = activeSpot.questions
@@ -356,16 +356,16 @@ export default function HomePage() {
         {phase === "welcome" && <Welcome connected={enteredByNfc} onStart={startJourney} onQr={startJourney} />}
         {phase === "consent" && <Consent entryMethod={entryMethod} required={journeyConsent} portrait={portraitConsent} onRequired={setJourneyConsent} onPortrait={setPortraitConsent} onBack={() => setPhase("welcome")} onStart={startJourney} />}
         {phase === "journey" && activeSpot && activeQuestion && journeyView === "question" && (
-          <QuestionScreen key={activeQuestion.id} spot={activeSpot} question={activeQuestion} answeredCount={Object.keys(answers).length} totalQuestions={spots.reduce((count, spot) => count + spot.questions.length, 0) + 1} selected={answers[activeQuestion.id]} onAnswer={chooseAnswer} />
+          <QuestionScreen key={activeQuestion.id} spot={activeSpot} question={activeQuestion} answeredCount={Object.keys(answers).length} totalQuestions={spots.reduce((count, spot) => count + spot.questions.length, 0)} selected={answers[activeQuestion.id]} onAnswer={chooseAnswer} />
         )}
-        {phase === "journey" && journeyView === "checkpoint" && <NextStepScreen title="Origin Gate" message="오늘의 무드가 Passport에 기록됐어요. Origin Gate부터 여정을 시작해볼게요." button="Origin Gate로 이동" onContinue={() => setJourneyView("tag")} />}
+        {phase === "journey" && journeyView === "checkpoint" && <NextStepScreen title="Origin Gate" message="오늘의 무드가 Passport에 기록됐어요. Origin Gate부터 여정을 시작해볼게요." button="Origin Gate로 이동" onContinue={() => openSpot(0)} />}
         {phase === "journey" && journeyView === "tag" && <TagYourFind onContinue={() => setJourneyView("map")} onTag={tagProduct} />}
         {phase === "journey" && journeyView === "product" && <TaggedProductScreen product={taggedProduct ?? demoProduct} onClose={closeTaggedProduct} />}
         {phase === "journey" && activeSpot && journeyView === "spot-detail" && (
           <SpotDetailScreen spot={activeSpot} previousSpotName={spots[activeSpotIndex - 1]?.name} complete={stamps.includes(activeSpot.id)} signalCount={stamps.length + (tagged ? 1 : 0)} totalSignals={spots.length + 1} onStart={() => setJourneyView("question")} onMap={() => setJourneyView("map")} />
         )}
         {phase === "journey" && journeyView === "map" && (
-          <JourneyMap spots={spots} stamps={stamps} tagged={tagged} requiredComplete={requiredComplete} onSpot={openSpot} onTag={() => tagProduct()} onBoard={() => setJourneyView("passport-offer")} />
+          <JourneyMap spots={spots} stamps={stamps} tagged={tagged} requiredComplete={requiredComplete} onSpot={openSpot} onTag={() => setJourneyView("tag")} onBoard={() => setJourneyView("passport-offer")} />
         )}
         {phase === "journey" && journeyView === "passport-offer" && <PassportOffer onIssue={issueBoarding} onBack={() => setJourneyView("map")} />}
         {phase === "boarding" && <Boarding stampCount={stamps.length + (tagged ? 1 : 0)} onBack={() => { setPhase("journey"); setJourneyView("map"); }} onContinue={() => { setTagConnected(false); setPhase("connecting"); }} />}
@@ -445,11 +445,10 @@ function QuestionScreen({ spot, question, answeredCount, totalQuestions, selecte
   question: JourneySpot["questions"][number];
   answeredCount: number;
   totalQuestions: number;
-  selected?: number;
-  onAnswer: (optionId: number, answerText?: string) => void;
+  selected?: number | null;
+  onAnswer: (optionId?: number, answerText?: string) => void;
 }) {
   const guide = guideCopy(question.code, spot.name);
-  const [draftOptionId, setDraftOptionId] = useState<number | undefined>(selected);
   const [draftAnswer, setDraftAnswer] = useState("");
   return (
     <div className="screen question-screen latest-guide-screen">
@@ -463,7 +462,7 @@ function QuestionScreen({ spot, question, answeredCount, totalQuestions, selecte
       <h1 className="guide-question">{question.questionText}</h1>
       <div className="choice-list question-choices">
         {question.options.sort((a, b) => a.sequence - b.sequence).map((option) => (
-          <button className={draftOptionId === option.id ? "chosen" : ""} key={option.id} onClick={() => setDraftOptionId(option.id)}>
+          <button className={selected === option.id ? "chosen" : ""} key={option.id} onClick={() => onAnswer(option.id)}>
             {option.label}<ChevronRight />
           </button>
         ))}
@@ -472,7 +471,7 @@ function QuestionScreen({ spot, question, answeredCount, totalQuestions, selecte
         <span className="voice-copy"><strong>MY ANSWER · OPTIONAL</strong><textarea value={draftAnswer} onChange={(event) => setDraftAnswer(event.target.value)} maxLength={500} rows={2} placeholder="나만의 답변을 직접 입력해도 좋아요." /></span>
         <span className="voice-icon"><Mic /></span>
       </label>
-      <button className="primary-button guide-answer-submit" type="button" disabled={draftOptionId === undefined} onClick={() => draftOptionId !== undefined && onAnswer(draftOptionId, draftAnswer.trim() || undefined)}>답변 저장하고 계속하기 <ArrowRight /></button>
+      {draftAnswer.trim() && <button className="primary-button guide-answer-submit" type="button" onClick={() => onAnswer(undefined, draftAnswer.trim())}>답변 저장하고 계속하기 <ArrowRight /></button>}
     </div>
   );
 }
@@ -578,12 +577,12 @@ function TagYourFind({ onContinue, onTag }: { onContinue: () => void; onTag: (pr
       <div className="tag-find-content">
         <button className={`tag-find-visual ${scanning ? "is-scanning" : ""}`} onClick={startScan} disabled={scanning || !supported} aria-label="NFC 가방 태그 스캔 시작"><Image src="/images/nfc-tag-visual.svg" alt="가방과 MCM Passport NFC 태깅" width={210} height={210} loading="eager" /></button>
         <h1>TAG YOUR FIND</h1>
-        <p>{supported ? "스캔을 시작한 뒤 마음에 드는 가방의\n스티커에 휴대폰을 가까이 대주세요." : "가방의 NFC 스티커를 휴대폰으로 태그하면\n제품이 Passport에 기록돼요."}</p>
-        <div className={`nfc-ready ${scanning ? "scanning" : ""}`}><strong>{scanning ? "NFC · SCANNING…" : supported ? "NFC · TAP TO SCAN" : "NFC · URL TAG READY"}</strong></div>
+        <p>{supported ? "스캔을 시작한 뒤 마음에 드는 가방의\n스티커에 휴대폰을 가까이 대주세요." : "현재 환경에서는 NFC 기능을 사용할 수 없습니다.\nAndroid Chrome과 NFC 지원 기기에서 이용해주세요."}</p>
+        <div className={`nfc-ready ${scanning ? "scanning" : ""}`}><strong>{scanning ? "NFC · SCANNING…" : supported ? "NFC · TAP TO SCAN" : "NFC · UNAVAILABLE"}</strong></div>
         {scanError && <span className="nfc-scan-error" role="alert">{scanError}</span>}
         {!supported && <div className="nfc-demo-actions"><small>PC·iPhone 데모</small>{nfcProducts.map((product, index) => <button key={product.id} onClick={() => onTag(product.id)}>가방 {String(index + 1).padStart(2, "0")}</button>)}</div>}
       </div>
-      <div className="tag-find-actions"><button className="text-cta" onClick={onContinue}>다음 미션 진행하기 <ArrowRight /></button></div>
+      <div className="tag-find-actions"><button className="text-cta" onClick={onContinue}>Journey Map으로 돌아가기 <ArrowRight /></button></div>
     </div>
   );
 }

@@ -85,7 +85,7 @@ export default function NfcSetupPage() {
         <p>Android Chrome에서 HTTPS로 접속한 뒤, 아래 순서대로 새 스티커를 휴대폰 뒷면에 대주세요.</p>
         <div className={`nfc-support ${supported ? "supported" : "unsupported"}`}>
           {supported ? <Check /> : <WifiOff />}
-          <span>{supported ? "이 기기에서 NFC 기록 가능" : "Web NFC 미지원 기기"}</span>
+          <span>{supported ? "이 기기에서 NFC 기록 가능" : "현재 환경에서는 NFC 기록 기능을 사용할 수 없습니다."}</span>
         </div>
         <div className="nfc-setup-list">
           <button className="nfc-entry-write" disabled={!supported || Boolean(writing)} onClick={() => write(tags.entry)}><b>{written.includes("entry") ? <Check /> : 1}</b><span><strong>{tags.entry.title}</strong><small>{tags.entry.detail}</small></span><em>{writing === "entry" ? "스티커를 대주세요…" : written.includes("entry") ? "기록 완료" : "기록하기"}</em></button>

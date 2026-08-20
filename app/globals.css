@@ -624,12 +624,7 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .welcome-screen .micro-logo { height: 50px; display: grid; place-items: center; font-size: 13px; font-weight: 500; }
 .welcome-screen .connection { margin-top: 4px; font-size: 11px; line-height: 16px; }
 .welcome-copy { margin: 22px 0 68px; font-size: 15px; line-height: 23px; }
-.welcome-screen .passport-card { height: 226px; min-height: 226px; border: 1.5px solid #a98455; border-radius: 20px; padding: 20px; background: linear-gradient(110deg,#3e342c 0,#2c251f 58%,#211913 100%); }
-.welcome-screen .passport-title { font-size: 11px; line-height: 16px; }
-.welcome-screen .passport-data { left: 20px; bottom: 20px; font-size: 13px; line-height: 26px; }
-.welcome-screen .passport-data small { display: none; }
-.welcome-screen .passport-data strong:last-child { display: block; color: var(--figma-gold); font-size: 11px; font-weight: 400; }
-.welcome-screen .passport-seal { right: 31px; top: 76px; }
+.welcome-passport-ticket { flex: 0 0 auto; }
 .welcome-screen .guide-bubble { height: 160px; margin: 0 -2px; position: relative; align-items: flex-start; }
 .welcome-screen .guide-bubble > div { position: absolute; left: 0; top: 38px; width: 259px; padding: 10px; border-radius: 10px; }
 .welcome-screen .guide-bubble small { font-size: 11px; }
@@ -753,14 +748,16 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .passport-offer-guide { min-height: 218px; padding-top: 70px; }
 .passport-offer-guide .ai-message { width: 276px; margin: 0; }
 .passport-offer-guide .guide-character { right: -1px; bottom: 4px; width: 132px; }
-.passport-offer-card.figma-passport-ticket { width: 100%; min-height: 0; aspect-ratio: 372 / 228; margin-top: 14px; padding: 0; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.figma-passport-ticket { width: 100%; min-height: 0; aspect-ratio: 372 / 228; padding: 0; position: relative; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.passport-offer-card.figma-passport-ticket { margin-top: 14px; }
 .figma-passport-ticket::before, .figma-passport-ticket::after { content: none; }
-.figma-passport-ticket > img { position: absolute; display: block; object-fit: fill; }
+.figma-ticket-layer { position: absolute; display: block; }
+.figma-ticket-layer > img { display: block; object-fit: fill; }
 .figma-passport-ticket .figma-ticket-main { z-index: 0; inset: 0; width: 100%; height: 100%; }
 .figma-passport-ticket .figma-ticket-side { z-index: 1; top: 3.07%; right: 0; width: 27.15%; height: 93.86%; }
 .figma-passport-ticket .figma-ticket-divider { z-index: 2; top: 11.51%; left: 69.62%; width: .1344%; height: 76.97%; }
 .figma-passport-ticket .figma-ticket-emblem { z-index: 2; top: 40.35%; left: 77.15%; width: 12.52%; height: 18.07%; transform: rotate(180deg) scaleX(-1); }
-.passport-offer-card.figma-passport-ticket > small { position: absolute; z-index: 3; top: 8.77%; left: 5.38%; color: #fff; font-size: 11px; line-height: 16px; font-weight: 300; letter-spacing: 0; }
+.figma-passport-ticket > small { position: absolute; z-index: 3; top: 8.77%; left: 5.38%; color: #fff; font-size: 11px; line-height: 16px; font-weight: 300; letter-spacing: 0; }
 .passport-offer-name { position: absolute; z-index: 3; left: 5.38%; bottom: 20.18%; width: auto !important; padding: 0 !important; border: 0 !important; color: #fff; font-size: 13px; line-height: 18px; font-weight: 500; }
 .passport-offer-destination { position: absolute; z-index: 3; left: 5.38%; bottom: 8.77%; width: auto !important; padding: 0 !important; border: 0 !important; color: #b07a36; font-size: 11px; line-height: 16px; font-weight: 400; }
 .passport-offer-actions { margin-top: 34px; padding: 0; display: grid; gap: 15px; }
@@ -956,7 +953,7 @@ body { min-height: 100svh; overflow-x: hidden; }
 
 @media (max-height: 780px) {
   .welcome-copy { margin-bottom: 28px; }
-  .welcome-screen .passport-card { height: 210px; min-height: 210px; }
+  .welcome-passport-ticket { width: 100%; }
   .welcome-screen .guide-bubble { height: 125px; }
   .latest-guide-screen .ai-guide-stage { height: 180px; margin-top: 12px; padding-top: 18px; }
   .latest-guide-screen .question-context { margin: 20px 0 18px; }

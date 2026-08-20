@@ -396,20 +396,27 @@ function Header({ title, onBack, light = false }: { title: string; onBack?: () =
   );
 }
 
+function PassportTicket({ className = "", priority = false }: { className?: string; priority?: boolean }) {
+  return (
+    <div className={`figma-passport-ticket ${className}`.trim()}>
+      <span className="figma-ticket-layer figma-ticket-main"><Image src="/images/figma-ticket-main.svg" alt="" fill sizes="372px" priority={priority} /></span>
+      <span className="figma-ticket-layer figma-ticket-side"><Image src="/images/figma-ticket-side.svg" alt="" fill sizes="101px" /></span>
+      <span className="figma-ticket-layer figma-ticket-divider"><Image src="/images/figma-ticket-divider.svg" alt="" fill sizes="1px" /></span>
+      <span className="figma-ticket-layer figma-ticket-emblem"><Image src="/images/figma-ticket-emblem.svg" alt="" fill sizes="47px" /></span>
+      <small>STYLE JOURNEY<br />PASSPORT</small>
+      <div className="passport-offer-name">GUEST · JIYOON</div>
+      <div className="passport-offer-destination">DESTINATION · CURATED BY YOU</div>
+    </div>
+  );
+}
+
 function Welcome({ connected, onStart, onQr }: { connected: boolean; onStart: () => void; onQr: () => void }) {
   return (
     <div className="screen welcome-screen">
       <div className="micro-logo">MCM PASSPORT</div>
       <div className={`connection ${connected ? "is-connected" : ""}`}><span>{connected ? "NFC BRAND CARD CONNECTED" : "MCM PASSPORT READY"}</span><FlightLine /></div>
       <p className="welcome-copy">고객님의 선택으로 오늘의 목적지가 완성됩니다.<br />AI Guide와 대화하며 스타일 여정을 시작해보세요.</p>
-      <div className="passport-card">
-        <div className="passport-title">STYLE JOURNEY<br />PASSPORT</div>
-        <div className="passport-chip" aria-hidden="true"><i /><i /><i /></div>
-        <div className="passport-route" aria-label="Seoul to your destination"><b>SEO</b><FlightLine /><b>YOU</b></div>
-        <div className="passport-data"><small>GUEST</small><strong>JIYOON</strong><br /><small>DESTINATION</small><strong>CURATED BY YOU</strong></div>
-        <div className="passport-seal"><Compass /><span>STYLE<br />JOURNEY</span></div>
-        <span className="passport-number">MCM · 26 0820 · S1</span>
-      </div>
+      <PassportTicket className="welcome-passport-ticket" priority />
       <div className="guide-bubble guide-stage"><GuideCharacter pose="presenter" /><div className="guide-copy"><small>AI GUIDE · AMY</small><p>“설문 대신 대화로,<br />고객님의 취향을 함께 발견할게요.”</p></div></div>
       <button className="text-cta" onClick={onStart}>여정 시작하기 <ArrowRight /></button>
       <button className="qr-entry" onClick={onQr}><QrCode /> NFC가 인식되지 않나요? QR로 열기</button>
@@ -645,15 +652,7 @@ function PassportOffer({ onIssue, onBack }: { onIssue: () => void; onBack: () =>
     <div className="screen passport-offer-screen">
       <Header title="AI Guide" light />
       <section className="passport-offer-guide guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>이제 MCM PASSPORT를 발급받을 수 있어요.<br />MCM PASSPORT를 화면으로 받아볼까요?</p></div><GuideCharacter pose="presenter" /></section>
-      <div className="passport-offer-card figma-passport-ticket">
-        <Image className="figma-ticket-main" src="/images/figma-ticket-main.svg" alt="" width={372} height={228} priority />
-        <Image className="figma-ticket-side" src="/images/figma-ticket-side.svg" alt="" width={101} height={214} />
-        <Image className="figma-ticket-divider" src="/images/figma-ticket-divider.svg" alt="" width={1} height={176} />
-        <Image className="figma-ticket-emblem" src="/images/figma-ticket-emblem.svg" alt="" width={47} height={42} />
-        <small>STYLE JOURNEY<br />PASSPORT</small>
-        <div className="passport-offer-name">GUEST · JIYOON</div>
-        <div className="passport-offer-destination">DESTINATION · CURATED BY YOU</div>
-      </div>
+      <PassportTicket className="passport-offer-card" priority />
       <div className="passport-offer-actions"><button className="figma-choice primary" onClick={onIssue}>네, 발급해주세요.</button><button className="figma-choice" onClick={onBack}>아니요, 조금 더 둘러볼래요.</button></div>
     </div>
   );

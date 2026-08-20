@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500&family=Playfair+Display:ital,wght@0,600;1,500&display=swap');
 
 :root {
   --paper: #f4f0e9;
@@ -743,18 +743,19 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .passport-offer-guide { min-height: 218px; padding-top: 70px; }
 .passport-offer-guide .ai-message { width: 276px; margin: 0; }
 .passport-offer-guide .guide-character { right: -1px; bottom: 4px; width: 132px; }
-.figma-passport-ticket { width: 100%; max-width: 372px; height: auto; min-height: 0; aspect-ratio: 372 / 228; margin-inline: auto; padding: 0; position: relative; flex: 0 0 auto; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.figma-passport-ticket { width: 100%; max-width: 372px; height: auto; min-height: 0; aspect-ratio: 372 / 228; margin-inline: auto; padding: 0; position: relative; flex: 0 0 auto; overflow: visible; isolation: isolate; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .passport-offer-card.figma-passport-ticket { margin-top: 14px; }
 .figma-passport-ticket::before, .figma-passport-ticket::after { content: none; }
+.figma-ticket-artwork { position: absolute; z-index: 0; inset: 0; pointer-events: none; }
 .figma-ticket-layer { position: absolute; display: block; }
 .figma-ticket-layer > img { display: block; object-fit: fill; }
 .figma-passport-ticket .figma-ticket-main { z-index: 0; inset: 0; width: 100%; height: 100%; }
 .figma-passport-ticket .figma-ticket-side { z-index: 1; top: 3.07%; right: 0; width: 27.15%; height: 93.86%; }
 .figma-passport-ticket .figma-ticket-divider { z-index: 2; top: 11.51%; left: 69.62%; width: .1344%; height: 76.97%; }
 .figma-passport-ticket .figma-ticket-emblem { z-index: 2; top: 40.35%; left: 77.15%; width: 12.52%; height: 18.07%; transform: rotate(180deg) scaleX(-1); }
-.figma-passport-ticket > small { position: absolute; z-index: 3; top: 8.77%; left: 5.38%; color: #fff; font-size: 11px; line-height: 16px; font-weight: 300; letter-spacing: 0; }
+.figma-passport-ticket > small { position: absolute; z-index: 3; top: 8.77%; left: 5.38%; color: #fff; font-size: 11px; line-height: 16px; font-weight: 300; letter-spacing: .1px; }
 .passport-offer-name { position: absolute; z-index: 3; left: 5.38%; bottom: 20.18%; width: auto !important; padding: 0 !important; border: 0 !important; color: #fff; font-size: 13px; line-height: 18px; font-weight: 500; }
-.passport-offer-destination { position: absolute; z-index: 3; left: 5.38%; bottom: 8.77%; width: auto !important; padding: 0 !important; border: 0 !important; color: #b07a36; font-size: 11px; line-height: 16px; font-weight: 400; }
+.passport-offer-destination { position: absolute; z-index: 3; left: 5.38%; bottom: 8.77%; width: auto !important; padding: 0 !important; border: 0 !important; color: #b07a36; font-size: 11px; line-height: 16px; font-weight: 400; letter-spacing: .1px; }
 .passport-offer-actions { margin-top: 34px; padding: 0; display: grid; gap: 15px; }
 .figma-choice { min-height: 56px; border: 1.5px solid #a98455; border-radius: 10px; background: transparent; color: #fff; font-size: 15px; }
 .figma-choice.primary { background: linear-gradient(105deg,#ca8d3d,#6b503c); }
@@ -764,13 +765,15 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .boarding-screen .app-header { margin: 0; }
 .boarding-screen .boarding-kicker { margin: 4px 0 57px; font-size: 11px; }
 .boarding-screen > h1 { margin: 0 0 58px; font-family: inherit; font-size: 20px; line-height: 26px; font-weight: 590; }
-.figma-boarding-pass { height: 228px; padding: 20px; border: 1.5px solid #a98455; border-radius: 20px; }
-.figma-boarding-pass .ticket-top { font-size: 11px; }
+.figma-boarding-pass { height: auto; border: 0; border-radius: 0; }
+.figma-boarding-pass .figma-ticket-emblem { opacity: 0; }
+.figma-boarding-pass .ticket-top { position: absolute; z-index: 3; top: 20px; left: 20px; right: 20px; font-size: 11px; }
 .boarding-pass-copy { position: absolute; left: 20px; bottom: 20px; display: grid; gap: 8px; }
 .boarding-pass-copy strong { font-size: 15px; }
 .boarding-pass-copy span { font-size: 11px; color: #c5b7a8; }
-.figma-boarding-pass .boarding-stamp { top: 80px; right: 108px; }
-.boarding-qr { position: absolute; right: 20px; top: 57px; width: 72px; padding-left: 12px; border-left: 1px dashed #7c6a59; display: grid; justify-items: center; gap: 5px; color: #c4985d; }
+.figma-boarding-pass .boarding-stamp { top: 80px; right: 118px; }
+.boarding-pass-copy, .figma-boarding-pass .boarding-stamp, .boarding-qr { z-index: 3; }
+.boarding-qr { position: absolute; right: 14px; top: 57px; width: 72px; padding-left: 12px; border-left: 1px dashed rgba(176,122,54,.55); display: grid; justify-items: center; gap: 5px; color: #c4985d; }
 .boarding-qr > svg:first-child { width: 56px; height: 56px; }
 .boarding-qr > svg:nth-child(2) { width: 22px; }
 .boarding-qr small { font-size: 5px; text-align: center; }
@@ -816,6 +819,7 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .destination-screen .destination-image { animation: image-focus .65s ease-out both; }
 .destination-screen .destination-overlay { background: linear-gradient(to bottom,rgba(4,8,18,.66) 0%,rgba(4,8,18,.42) 46%,rgba(3,7,16,.82) 100%); }
 .destination-copy { min-height: 0; padding: 42px 15px max(28px, env(safe-area-inset-bottom, 0px)); }
+.destination-copy > small { margin-bottom: 26px; color: #fff; font-size: clamp(15px, 4vw, 18px); line-height: 23px; font-weight: 500; letter-spacing: .08em; text-shadow: 0 1px 8px rgba(0,0,0,.45); }
 .destination-copy h1 { margin-top: 13px; color: #fff; font-size: 20px; line-height: 28px; }
 .destination-copy > p { color: #fff; font-size: 13px; line-height: 18px; }
 .destination-product { margin-top: clamp(34px, 12dvh, 140px); height: 168px; border-radius: 20px 20px 0 0; background: rgba(247,247,245,.9); }
@@ -934,7 +938,7 @@ body { min-height: 100svh; overflow-x: hidden; }
 .passport-offer-route .flight-line { min-width: 48px; }
 .passport-offer-serial { position: absolute; z-index: 2; left: 20px; bottom: 13px; color: rgba(230,210,182,.46) !important; font-size: 7px !important; letter-spacing: .12em; }
 .figma-passport-ticket::before, .figma-passport-ticket::after { z-index: 3; }
-.ticket-route { position: absolute; left: 20px; right: 112px; top: 53px; display: flex; align-items: center; gap: 7px; }
+.ticket-route { position: absolute; z-index: 3; left: 20px; right: 112px; top: 53px; display: flex; align-items: center; gap: 7px; }
 .ticket-route b { color: #e9d3b5; font-size: 11px; font-weight: 500; }
 .ticket-route .flight-line { min-width: 45px; }
 

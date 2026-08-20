@@ -377,7 +377,7 @@ export default function HomePage() {
           <SpotDetailScreen spot={activeSpot} previousSpotName={spots[activeSpotIndex - 1]?.name} complete={stamps.includes(activeSpot.id)} signalCount={stamps.length + (tagged ? 1 : 0)} totalSignals={spots.length + 1} onStart={() => setJourneyView("question")} onMap={() => setJourneyView("map")} />
         )}
         {phase === "journey" && journeyView === "map" && (
-          <JourneyMap spots={spots} stamps={stamps} tagged={tagged} taggedProductCount={taggedProductIds.length || (tagged ? 1 : 0)} requiredComplete={requiredComplete} onSpot={openSpot} onTag={() => setJourneyView("tag")} onBoard={() => setJourneyView("passport-offer")} />
+          <JourneyMap key={`journey-map-${stamps.length}`} spots={spots} stamps={stamps} tagged={tagged} taggedProductCount={taggedProductIds.length || (tagged ? 1 : 0)} requiredComplete={requiredComplete} onSpot={openSpot} onNextSpot={(index) => { setActiveSpotIndex(index); setJourneyView("question"); }} onTag={() => setJourneyView("tag")} onBoard={() => setJourneyView("passport-offer")} />
         )}
         {phase === "journey" && journeyView === "passport-offer" && <PassportOffer onIssue={issueBoarding} onBack={() => setJourneyView("map")} />}
         {phase === "boarding" && <Boarding stampCount={stamps.length + (tagged ? 1 : 0)} onBack={() => { setPhase("journey"); setJourneyView("map"); }} onContinue={() => { setTagConnected(false); setPhase("connecting"); }} />}
@@ -386,7 +386,7 @@ export default function HomePage() {
         {phase === "destination" && styleResult && <Destination result={styleResult} onContinue={prepareSouvenir} />}
         {phase === "portrait" && styleResult && <Portrait result={styleResult} saved={portraitSaved} available={Boolean(portraitImageUrl) && portraitConsent} consented={portraitConsent} onConsent={() => setPortraitConsent(true)} onSave={savePortrait} onContinue={prepareSouvenir} />}
         {phase === "completion" && souvenir && <Completion souvenir={souvenir} portraitSaved={portraitSaved} onSave={saveSouvenir} />}
-        {phase === "passport" && souvenir && <Passport souvenir={souvenir} saved={souvenirSaved} accountLinked={accountLinked} onAccount={() => setAccountOpen(true)} onReset={reset} />}
+        {phase === "passport" && souvenir && <Passport souvenir={souvenir} saved={souvenirSaved} accountLinked={accountLinked} onBack={() => setPhase("completion")} onAccount={() => setAccountOpen(true)} onReset={reset} />}
 
         {accountOpen && <AccountLinkSheet linked={accountLinked} onLink={() => { setAccountLinked(true); setAccountOpen(false); }} onClose={() => setAccountOpen(false)} />}
 
@@ -405,6 +405,49 @@ function Header({ title, onBack, light = false }: { title: string; onBack?: () =
       <span>{title}</span>
       <button className="icon-button" aria-label="메뉴">•••</button>
     </header>
+  );
+}
+
+function BottomSheetHandle({ expanded, onExpandedChange, label }: {
+  expanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
+  label: string;
+}) {
+  const pointerStartY = useRef<number | null>(null);
+  const dragged = useRef(false);
+
+  return (
+    <button
+      className="sheet-handle"
+      type="button"
+      aria-label={`${label} ${expanded ? "내리기" : "올리기"}`}
+      aria-expanded={expanded}
+      onPointerDown={(event) => {
+        pointerStartY.current = event.clientY;
+        dragged.current = false;
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }}
+      onPointerUp={(event) => {
+        if (pointerStartY.current === null) return;
+        const distance = event.clientY - pointerStartY.current;
+        pointerStartY.current = null;
+        if (Math.abs(distance) < 28) return;
+        dragged.current = true;
+        onExpandedChange(distance < 0);
+      }}
+      onPointerCancel={() => {
+        pointerStartY.current = null;
+      }}
+      onClick={() => {
+        if (dragged.current) {
+          dragged.current = false;
+          return;
+        }
+        onExpandedChange(!expanded);
+      }}
+    >
+      <span />
+    </button>
   );
 }
 
@@ -608,32 +651,40 @@ function TagYourFind({ onContinue, onTag }: { onContinue: () => void; onTag: (pr
 }
 
 function TaggedProductScreen({ product, onClose }: { product: Product; onClose: () => void }) {
+  const [sheetExpanded, setSheetExpanded] = useState(true);
+
   return (
     <div className="screen product-reason-screen prototype-product-event">
       <Header title="AI Guide" light />
       <section className="product-reason-hero guide-stage"><div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter pose="pointer" /></section>
-      <section className="product-reason-sheet">
-        <small>TAGGED PRODUCT · SIGNAL 01</small>
-        <div className="mini-tagged-product"><Image src={product.imageUrl ?? "/images/travel-backpack.png"} alt={product.name} width={82} height={82} /><div><strong>{product.name}</strong><span>{product.color} · {product.material} · {product.silhouette}</span></div><Check /></div>
-        <h1>이 제품이 취향에 남긴 신호</h1>
-        <div className="tag-signal-copy"><span>MOVEMENT</span><strong>Afterdark</strong><p>도시의 밤처럼 구조적이고 자유로운 이동 감각이 오늘의 선택과 연결됐어요.</p></div>
+      <section className={`product-reason-sheet interactive-bottom-sheet ${sheetExpanded ? "is-expanded" : "is-collapsed"}`}>
+        <BottomSheetHandle expanded={sheetExpanded} onExpandedChange={setSheetExpanded} label="태그 결과" />
+        <div className="product-reason-sheet-content">
+          <small>TAGGED PRODUCT · SIGNAL 01</small>
+          <div className="mini-tagged-product"><Image src={product.imageUrl ?? "/images/travel-backpack.png"} alt={product.name} width={82} height={82} /><div><strong>{product.name}</strong><span>{product.color} · {product.material} · {product.silhouette}</span></div><Check /></div>
+          <h1>이 제품이 취향에 남긴 신호</h1>
+          <div className="tag-signal-copy"><span>MOVEMENT</span><strong>Afterdark</strong><p>도시의 밤처럼 구조적이고 자유로운 이동 감각이 오늘의 선택과 연결됐어요.</p></div>
+        </div>
       </section>
       <button className="primary-button tagged-close" onClick={onClose}>확인했어요 · 계속하기 <ArrowRight /></button>
     </div>
   );
 }
 
-function JourneyMap({ spots, stamps, tagged, taggedProductCount, requiredComplete, onSpot, onTag, onBoard }: {
+function JourneyMap({ spots, stamps, tagged, taggedProductCount, requiredComplete, onSpot, onNextSpot, onTag, onBoard }: {
   spots: JourneySpot[];
   stamps: number[];
   tagged: boolean;
   taggedProductCount: number;
   requiredComplete: boolean;
   onSpot: (index: number) => void;
+  onNextSpot: (index: number) => void;
   onTag: () => void;
   onBoard: () => void;
 }) {
-  const nextSpot = spots.find((spot) => !stamps.includes(spot.id));
+  const [sheetExpanded, setSheetExpanded] = useState(true);
+  const nextSpotIndex = spots.findIndex((spot) => !stamps.includes(spot.id));
+  const nextSpot = nextSpotIndex >= 0 ? spots[nextSpotIndex] : undefined;
   const guideMessage = requiredComplete
     ? "모든 스탬프를 다 모았어요. 이제 MCM Passport를 발급받을 수 있어요."
     : stamps.length === 0
@@ -643,19 +694,38 @@ function JourneyMap({ spots, stamps, tagged, taggedProductCount, requiredComplet
     <div className="screen map-screen">
       <Header title="AI Guide" light />
       <section className="map-guide guide-stage"><div className="guide-copy"><small>AI GUIDE · AMY</small><p>{guideMessage}</p></div><GuideCharacter pose="presenter" /></section>
-      <section className="map-sheet">
-        <div className="sheet-handle" />
-        <small>MY JOURNEY · {stamps.length + (tagged ? 1 : 0)} / {spots.length + 1} SIGNALS</small>
-        <h2>SPOT별 스탬프 현황</h2>
-        <div className="spot-list">
-          {spots.map((spot, index) => {
-            const complete = stamps.includes(spot.id);
-            const completionLabels = ["Mood selected", "Texture signal", "Motion signal", "배경 무드 발견"];
-            return <button className={complete ? "complete" : ""} key={spot.id} onClick={() => onSpot(index)}><div><strong>{spot.name}</strong><span>{complete ? `완료 · ${completionLabels[index] ?? "Stamp collected"}` : index === stamps.length ? `NEXT · ${completionLabels[index] ?? "다음 감각 발견"}` : spot.description}</span></div>{complete ? <Stamp /> : <ChevronRight />}</button>;
-          })}
-          <button className={`product-list-row ${tagged ? "complete" : ""}`} onClick={onTag}><div><strong>Product Tagging</strong><span>{tagged ? "완료 · " : ""}{taggedProductCount} {taggedProductCount === 1 ? "product" : "products"} saved</span></div>{tagged ? <Stamp /> : <ScanLine />}</button>
-        </div>
-        {requiredComplete && <button className="primary-button map-boarding" onClick={onBoard}>MCM Passport 발급받기 <ArrowRight /></button>}
+      <section className={`map-sheet interactive-bottom-sheet ${sheetExpanded ? "is-expanded" : "is-collapsed"}`}>
+        <BottomSheetHandle expanded={sheetExpanded} onExpandedChange={setSheetExpanded} label="Journey Stamp 현황" />
+        {sheetExpanded ? (
+          <div className="map-sheet-expanded-content">
+            <small>MY JOURNEY · {stamps.length + (tagged ? 1 : 0)} / {spots.length + 1} SIGNALS</small>
+            <h2>SPOT별 스탬프 현황</h2>
+            <div className="spot-list">
+              {spots.map((spot, index) => {
+                const complete = stamps.includes(spot.id);
+                const completionLabels = ["Mood selected", "Texture signal", "Motion signal", "배경 무드 발견"];
+                return <button className={complete ? "complete" : ""} key={spot.id} onClick={() => onSpot(index)}><div><strong>{spot.name}</strong><span>{complete ? `완료 · ${completionLabels[index] ?? "Stamp collected"}` : index === nextSpotIndex ? `NEXT · ${completionLabels[index] ?? "다음 감각 발견"}` : spot.description}</span></div>{complete ? <Stamp /> : <ChevronRight />}</button>;
+              })}
+              <button className={`product-list-row ${tagged ? "complete" : ""}`} onClick={onTag}><div><strong>Product Tagging</strong><span>{tagged ? "완료 · " : ""}{taggedProductCount} {taggedProductCount === 1 ? "product" : "products"} saved</span></div>{tagged ? <Stamp /> : <ScanLine />}</button>
+            </div>
+            {requiredComplete && <button className="primary-button map-boarding" onClick={onBoard}>MCM Passport 발급받기 <ArrowRight /></button>}
+          </div>
+        ) : (
+          <div className="map-sheet-collapsed-content">
+            <small>{requiredComplete ? "JOURNEY COMPLETE" : "NEXT STEP"}</small>
+            {nextSpot ? (
+              <>
+                <div className="map-next-card"><span>{String(nextSpot.sequence).padStart(2, "0")}</span><strong>{nextSpot.name}</strong><i /><p>{nextSpot.description}</p></div>
+                <button className="primary-button map-next-button" onClick={() => onNextSpot(nextSpotIndex)}>다음 spot으로 이동 <ArrowRight /></button>
+              </>
+            ) : (
+              <>
+                <div className="map-next-card is-complete"><Stamp /><strong>모든 Journey Stamp를 모았어요.</strong><p>이제 고객님의 선택으로 완성된 MCM Passport를 발급받을 수 있어요.</p></div>
+                <button className="primary-button map-next-button" onClick={onBoard}>MCM Passport 발급받기 <ArrowRight /></button>
+              </>
+            )}
+          </div>
+        )}
       </section>
     </div>
   );
@@ -772,12 +842,21 @@ function Portrait({ result, saved, available, consented, onConsent, onSave, onCo
 }
 
 function Completion({ souvenir, onSave }: { souvenir: JourneySouvenir; portraitSaved: boolean; onSave: () => void }) {
+  const [benefitVisible, setBenefitVisible] = useState(false);
   const [benefitOpen, setBenefitOpen] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setBenefitOpen(true), 800);
+    const timer = window.setTimeout(() => {
+      setBenefitVisible(true);
+      setBenefitOpen(true);
+    }, 800);
     return () => window.clearTimeout(timer);
   }, []);
+
+  const openBenefit = () => {
+    setBenefitVisible(true);
+    setBenefitOpen(true);
+  };
 
   return (
     <div className="screen completion-screen latest-passport-screen figma-souvenir-screen">
@@ -785,16 +864,16 @@ function Completion({ souvenir, onSave }: { souvenir: JourneySouvenir; portraitS
       <div className="completion-heading"><span>JOURNEY COMPLETE</span><FlightLine /><h1>Your Souvenir is ready.</h1><p>오늘의 선택이<br />하나의 City Code와 제품 이야기로 저장됩니다.</p></div>
       <SouvenirCard souvenir={souvenir} />
       <p className="souvenir-login-note">로그인하면 오늘의 결과를 저장하고, 고객님에게 어울리는 제품 추천과 Souvenir Benefit을 받을 수 있어요.</p>
-      <button className="text-cta souvenir-save" onClick={() => setBenefitOpen(true)}>My Passport 가기 <ArrowRight /></button>
-      {benefitOpen && <div className="benefit-overlay" role="dialog" aria-modal="true" aria-label="Souvenir benefit"><section className="benefit-sheet"><div className="sheet-handle" /><small>Souvenir benefit</small><h2>오늘의 City Code를 기반으로 준비된 고객님만의<br />Private Benefit입니다.</h2><h3><b>01</b> 추천 제품 전용 할인 쿠폰</h3><div className="coupon-card"><CouponIcon /><div><small>SOUVENIR COUPON</small><strong>10% OFF</strong><p>추천 제품에 사용 가능</p></div></div><h3><b>02</b> City Code 기반 추가 제품 추천</h3><div className="benefit-tags"><span>Black tone</span><span>Wide silhouette</span><span>Metallic detail</span><span>Urban</span></div><h3><b>03</b> 오늘의 Journey 결과 다시 보기</h3><p className="benefit-note">로그인하면 My Passport에 결과가 안전하게 저장되며,<br />고객님에게 더 맞는 추천을 받아보실 수 있습니다.</p><button className="primary-button" onClick={onSave}>로그인 하고 My Passport에 저장</button><button className="benefit-skip" onClick={onSave}>로그인 없이 계속 여행하기</button></section></div>}
+      <button className="text-cta souvenir-save" onClick={openBenefit}>My Passport 가기 <ArrowRight /></button>
+      {benefitVisible && <div className={`benefit-overlay ${benefitOpen ? "is-expanded" : "is-collapsed"}`} role="dialog" aria-modal={benefitOpen} aria-label="Souvenir benefit"><section className="benefit-sheet interactive-bottom-sheet"><BottomSheetHandle expanded={benefitOpen} onExpandedChange={setBenefitOpen} label="Souvenir benefit" /><div className="benefit-sheet-content"><small>Souvenir benefit</small><h2>오늘의 City Code를 기반으로 준비된 고객님만의<br />Private Benefit입니다.</h2><h3><b>01</b> 추천 제품 전용 할인 쿠폰</h3><div className="coupon-card"><CouponIcon /><div><small>SOUVENIR COUPON</small><strong>10% OFF</strong><p>추천 제품에 사용 가능</p></div></div><h3><b>02</b> City Code 기반 추가 제품 추천</h3><div className="benefit-tags"><span>Black tone</span><span>Wide silhouette</span><span>Metallic detail</span><span>Urban</span></div><h3><b>03</b> 오늘의 Journey 결과 다시 보기</h3><p className="benefit-note">로그인하면 My Passport에 결과가 안전하게 저장되며,<br />고객님에게 더 맞는 추천을 받아보실 수 있습니다.</p><button className="primary-button" onClick={onSave}>로그인 하고 My Passport에 저장</button><button className="benefit-skip" onClick={onSave}>로그인 없이 계속 여행하기</button></div></section></div>}
     </div>
   );
 }
 
-function Passport({ souvenir, onAccount, onReset }: { souvenir: JourneySouvenir; saved: boolean; accountLinked: boolean; onAccount: () => void; onReset: () => void }) {
+function Passport({ souvenir, onBack, onAccount, onReset }: { souvenir: JourneySouvenir; saved: boolean; accountLinked: boolean; onBack: () => void; onAccount: () => void; onReset: () => void }) {
   return (
     <div className="screen completion-screen latest-passport-screen my-passport-screen figma-my-passport">
-      <Header title="MCM PASSPORT" />
+      <Header title="MCM PASSPORT" onBack={onBack} />
       <div className="passport-saved-title"><Check /><div><h1>My passport에 저장 완료!</h1><p>오늘의 여정 결과와 혜택이 저장되었습니다.</p></div></div>
       <section className="saved-coupon"><CouponIcon /><div><small>SOUVENIR COUPON</small><strong>10% OFF</strong><p>추천 제품에 사용 가능</p></div><div className="coupon-download"><CouponDownloadIcon /><small>쿠폰 다운로드</small></div></section>
       <div className="passport-products-title"><h2>City Code에 더 어울리는 제품</h2><button onClick={onAccount}>전체 보기 <ChevronRight /></button></div>

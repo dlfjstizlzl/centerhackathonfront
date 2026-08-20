@@ -465,7 +465,6 @@ function QuestionScreen({ spot, question, questionNumber, totalQuestions, select
   return (
     <div className="screen question-screen latest-guide-screen">
       <Header title="AI Guide" light />
-      <div className="guide-progress"><span>{guide.eyebrow}</span><div><i style={{ width: `${Math.max(8, (questionNumber / safeTotalQuestions) * 100)}%` }} /></div><small>{questionNumber}/{safeTotalQuestions}</small></div>
       <section className="ai-guide-stage guide-stage">
         <div className="ai-message guide-copy"><small>AI GUIDE · AMY</small><p>{guide.message}</p></div>
         <GuideCharacter pose="pointer" />

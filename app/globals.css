@@ -312,10 +312,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .latest-guide-screen { padding: 34px 0 22px; background: #27211c; color: #fff; overflow-y: auto; }
 .latest-guide-screen .app-header { padding: 0 12px; }
-.guide-progress { height: 29px; margin: 2px 18px 0; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px; color: #b28b58; font-size: 6px; letter-spacing: .1em; }
-.guide-progress > div { height: 1px; overflow: hidden; background: #514538; }
-.guide-progress i { display: block; height: 100%; background: #c4985e; transition: width .35s ease; }
-.guide-progress small { color: #82766c; font-size: 6px; }
 .ai-guide-stage { height: 225px; padding: 36px 18px 0; display: flex; align-items: flex-start; justify-content: space-between; position: relative; }
 .ai-message { position: relative; z-index: 2; width: min(72%, 292px); margin-top: 4px; padding: 12px 14px; border-radius: 8px 8px 2px 8px; background: #fff; color: var(--ink); box-shadow: 0 10px 30px rgba(0,0,0,.18); }
 .ai-message::after { content: none; }
@@ -637,7 +633,6 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 .question-screen, .signal-screen, .tag-find-screen, .map-screen, .frame42-screen, .product-reason-screen, .passport-offer-screen { background: var(--figma-dark); color: #fff; }
 .question-screen { padding: 58px 15px 18px; animation: prototype-smart-in .8s cubic-bezier(.42,0,1,1) both; }
 .latest-guide-screen .app-header { margin: 0; }
-.latest-guide-screen .guide-progress { margin-top: 8px; }
 .latest-guide-screen .ai-guide-stage { margin-top: 34px; }
 .latest-guide-screen .question-context { margin: 58px 0 36px; text-align: left; }
 .latest-guide-screen .guide-question { margin: 0 10px 36px; max-width: none; text-align: left; color: #fff; font-size: 20px; line-height: 28px; }

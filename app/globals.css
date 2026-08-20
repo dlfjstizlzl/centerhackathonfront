@@ -897,6 +897,15 @@ body { min-height: 100svh; overflow-x: hidden; }
 .flight-line b { width: 20px; height: 20px; padding: 0; display: grid; place-items: center; transform: rotate(7deg); }
 .flight-line b svg { width: 15px; height: 15px; stroke-width: 1.45; }
 
+.welcome-screen .guide-character--presenter { width: 120px; }
+.ai-guide-stage .guide-character--pointer { width: 150px; right: -5px; }
+.signal-guide .guide-character--pointer,
+.frame42-guide .guide-character--pointer,
+.product-reason-hero .guide-character--pointer { width: 150px; right: -6px; }
+.map-guide .guide-character--presenter,
+.passport-offer-guide .guide-character--presenter,
+.boarding-guide .guide-character--presenter { width: 118px; right: 2px; }
+
 .passport-chip { position: absolute; z-index: 2; left: 20px; top: 61px; width: 34px !important; height: 25px; padding: 4px !important; border: 1px solid rgba(217,183,127,.55) !important; border-radius: 5px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: linear-gradient(145deg,#b99155,#806234); }
 .passport-chip i { border-right: 1px solid rgba(41,31,24,.45); }
 .passport-chip i:last-child { border: 0; }

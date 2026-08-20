@@ -406,7 +406,7 @@ function Welcome({ connected, onStart, onQr }: { connected: boolean; onStart: ()
         <div className="passport-seal"><Compass /><span>STYLE<br />JOURNEY</span></div>
         <span className="passport-number">MCM · 26 0820 · S1</span>
       </div>
-      <div className="guide-bubble"><GuideCharacter /><div><small>AI GUIDE · AMY</small><p>“설문 대신 대화로,<br />고객님의 취향을 함께 발견할게요.”</p></div></div>
+      <div className="guide-bubble"><GuideCharacter pose="presenter" /><div><small>AI GUIDE · AMY</small><p>“설문 대신 대화로,<br />고객님의 취향을 함께 발견할게요.”</p></div></div>
       <button className="text-cta" onClick={onStart}>여정 시작하기 <ArrowRight /></button>
       <button className="qr-entry" onClick={onQr}><QrCode /> NFC가 인식되지 않나요? QR로 열기</button>
     </div>
@@ -451,7 +451,7 @@ function QuestionScreen({ spot, question, answeredCount, totalQuestions, selecte
       <div className="guide-progress"><span>{guide.eyebrow}</span><div><i style={{ width: `${Math.max(8, ((answeredCount + 1) / Math.max(totalQuestions, 1)) * 100)}%` }} /></div><small>{answeredCount + 1}/{Math.max(totalQuestions, 1)}</small></div>
       <section className="ai-guide-stage">
         <div className="ai-message"><small>AI GUIDE · AMY</small><p>{guide.message}</p></div>
-        <GuideCharacter />
+        <GuideCharacter pose="pointer" />
       </section>
       <div className="question-context"><span>{guide.label}</span><FlightLine /></div>
       <h1 className="guide-question">{question.questionText}</h1>
@@ -479,7 +479,7 @@ function NextStepScreen({ title, message, button, onContinue }: {
   return (
     <div className="screen signal-screen">
       <Header title="AI Guide" light />
-      <section className="signal-guide"><div><small>AI GUIDE · AMY</small><p>{message}</p></div><GuideCharacter /></section>
+      <section className="signal-guide"><div><small>AI GUIDE · AMY</small><p>{message}</p></div><GuideCharacter pose="pointer" /></section>
       <section className="signal-sheet">
         <div className="sheet-handle" />
         <small>현재 상태</small>
@@ -508,7 +508,7 @@ function SpotDetailScreen({ spot, previousSpotName, complete, signalCount, total
       <Header title="AI Guide" onBack={onMap} light />
       <section className="frame42-guide">
         <div className="ai-message"><small>AI GUIDE · AMY</small><p>{complete ? `${spot.name} 여정을 이미 완료했어요. 기록된 내용을 다시 확인해볼까요?` : guideMessage}</p></div>
-        <GuideCharacter />
+        <GuideCharacter pose="pointer" />
       </section>
       <section className="frame42-status"><span>현재 상태</span><small>MY JOURNEY · {signalCount} / {totalSignals} SIGNALS</small></section>
       <section className="frame42-next">
@@ -585,7 +585,7 @@ function TaggedProductScreen({ product, onClose }: { product: Product; onClose: 
   return (
     <div className="screen product-reason-screen prototype-product-event">
       <Header title="AI Guide" light />
-      <section className="product-reason-hero"><div className="ai-message"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter /></section>
+      <section className="product-reason-hero"><div className="ai-message"><small>AI GUIDE · AMY</small><p>{product.name}이 Passport에 기록됐어요.<br />{product.description ?? "Movement 선택과 연결되는 제품이에요."}</p></div><GuideCharacter pose="pointer" /></section>
       <section className="product-reason-sheet">
         <small>TAGGED PRODUCT · SIGNAL 01</small>
         <div className="mini-tagged-product"><Image src={product.imageUrl ?? "/images/travel-backpack.png"} alt={product.name} width={82} height={82} /><div><strong>{product.name}</strong><span>{product.color} · {product.material} · {product.silhouette}</span></div><Check /></div>
@@ -615,7 +615,7 @@ function JourneyMap({ spots, stamps, tagged, requiredComplete, onSpot, onTag, on
   return (
     <div className="screen map-screen">
       <Header title="AI Guide" light />
-      <section className="map-guide"><div><small>AI GUIDE · AMY</small><p>{guideMessage}</p></div><GuideCharacter /></section>
+      <section className="map-guide"><div><small>AI GUIDE · AMY</small><p>{guideMessage}</p></div><GuideCharacter pose="presenter" /></section>
       <section className="map-sheet">
         <div className="sheet-handle" />
         <small>MY JOURNEY · {stamps.length + (tagged ? 1 : 0)} / {spots.length + 1} SIGNALS</small>
@@ -638,7 +638,7 @@ function PassportOffer({ onIssue, onBack }: { onIssue: () => void; onBack: () =>
   return (
     <div className="screen passport-offer-screen">
       <Header title="AI Guide" light />
-      <section className="passport-offer-guide"><div className="ai-message"><small>AI GUIDE · AMY</small><p>이제 MCM PASSPORT를 발급받을 수 있어요.<br />MCM PASSPORT를 화면으로 받아볼까요?</p></div><GuideCharacter /></section>
+      <section className="passport-offer-guide"><div className="ai-message"><small>AI GUIDE · AMY</small><p>이제 MCM PASSPORT를 발급받을 수 있어요.<br />MCM PASSPORT를 화면으로 받아볼까요?</p></div><GuideCharacter pose="presenter" /></section>
       <div className="passport-offer-card figma-passport-ticket">
         <small>STYLE JOURNEY<br />PASSPORT</small>
         <div className="passport-chip" aria-hidden="true"><i /><i /><i /></div>
@@ -666,7 +666,7 @@ function Boarding({ stampCount, onBack, onContinue }: { stampCount: number; onBa
         <div className="boarding-stamp">READY TO<br />BOARD</div>
         <div className="boarding-qr"><QrCode /><Plane /><small>SCAN TO OPEN<br />YOUR PASSPORT</small></div>
       </div>
-      <section className="boarding-guide"><div className="ai-message"><small>AI GUIDE · AMY</small><p>여정이 완료됐어요.<br />Style Spot에서 AI Guide가 정리한 고객님의<br />City Code를 확인해보세요.</p></div><GuideCharacter /></section>
+      <section className="boarding-guide"><div className="ai-message"><small>AI GUIDE · AMY</small><p>여정이 완료됐어요.<br />Style Spot에서 AI Guide가 정리한 고객님의<br />City Code를 확인해보세요.</p></div><GuideCharacter pose="presenter" /></section>
       <button className="text-cta boarding-connect" onClick={onContinue}>Style spot으로 이동 <ArrowRight /></button>
     </div>
   );
@@ -826,8 +826,9 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
   return <div className="error-toast" role="alert"><span>{message}</span><button onClick={onClose} aria-label="오류 닫기"><X /></button></div>;
 }
 
-function GuideCharacter() {
-  return <Image className="guide-character" src="/images/amy-guide.png" alt="" width={152} height={190} loading="eager" aria-hidden="true" />;
+function GuideCharacter({ pose }: { pose: "pointer" | "presenter" }) {
+  const isPointer = pose === "pointer";
+  return <Image className={`guide-character guide-character--${pose}`} src={`/images/amy-guide-${pose}.png`} alt="" width={isPointer ? 150 : 124} height={154} loading="eager" aria-hidden="true" />;
 }
 
 function FlightLine() {

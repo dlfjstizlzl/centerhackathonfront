@@ -827,7 +827,7 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
 }
 
 function GuideCharacter() {
-  return <Image className="guide-character" src="/images/amy-guide-v2.png" alt="" width={128} height={192} loading="eager" aria-hidden="true" />;
+  return <Image className="guide-character" src="/images/amy-guide.png" alt="" width={152} height={190} loading="eager" aria-hidden="true" />;
 }
 
 function FlightLine() {

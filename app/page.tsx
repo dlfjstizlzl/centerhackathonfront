@@ -400,8 +400,11 @@ function Welcome({ connected, onStart, onQr }: { connected: boolean; onStart: ()
       <p className="welcome-copy">고객님의 선택으로 오늘의 목적지가 완성됩니다.<br />AI Guide와 대화하며 스타일 여정을 시작해보세요.</p>
       <div className="passport-card">
         <div className="passport-title">STYLE JOURNEY<br />PASSPORT</div>
+        <div className="passport-chip" aria-hidden="true"><i /><i /><i /></div>
+        <div className="passport-route" aria-label="Seoul to your destination"><b>SEO</b><FlightLine /><b>YOU</b></div>
         <div className="passport-data"><small>GUEST</small><strong>JIYOON</strong><br /><small>DESTINATION</small><strong>CURATED BY YOU</strong></div>
         <div className="passport-seal"><Compass /><span>STYLE<br />JOURNEY</span></div>
+        <span className="passport-number">MCM · 26 0820 · S1</span>
       </div>
       <div className="guide-bubble"><GuideCharacter /><div><small>AI GUIDE · AMY</small><p>“설문 대신 대화로,<br />고객님의 취향을 함께 발견할게요.”</p></div></div>
       <button className="text-cta" onClick={onStart}>여정 시작하기 <ArrowRight /></button>
@@ -459,7 +462,10 @@ function QuestionScreen({ spot, question, answeredCount, totalQuestions, selecte
           </button>
         ))}
       </div>
-      <button className="voice-answer" aria-label="음성으로 답하기"><span>마이크를 누르고 음성으로 답해도 좋아요.</span><Mic /></button>
+      <button className="voice-answer" type="button" aria-label="음성으로 답하기">
+        <span className="voice-copy"><strong>VOICE ANSWER</strong><small>마이크를 누르고 음성으로 답해도 좋아요.</small></span>
+        <span className="voice-icon"><Mic /></span>
+      </button>
     </div>
   );
 }
@@ -600,12 +606,6 @@ function JourneyMap({ spots, stamps, tagged, requiredComplete, onSpot, onTag, on
   onTag: () => void;
   onBoard: () => void;
 }) {
-  useEffect(() => {
-    if (!requiredComplete) return;
-    const timer = window.setTimeout(onBoard, 1500);
-    return () => window.clearTimeout(timer);
-  }, [requiredComplete, onBoard]);
-
   const nextSpot = spots.find((spot) => !stamps.includes(spot.id));
   const guideMessage = requiredComplete
     ? "모든 스탬프를 다 모았어요. 이제 MCM Passport를 발급받을 수 있어요."
@@ -639,7 +639,15 @@ function PassportOffer({ onIssue, onBack }: { onIssue: () => void; onBack: () =>
     <div className="screen passport-offer-screen">
       <Header title="AI Guide" light />
       <section className="passport-offer-guide"><div className="ai-message"><small>AI GUIDE · AMY</small><p>이제 MCM PASSPORT를 발급받을 수 있어요.<br />MCM PASSPORT를 화면으로 받아볼까요?</p></div><GuideCharacter /></section>
-      <div className="passport-offer-card figma-passport-ticket"><small>STYLE JOURNEY<br />PASSPORT</small><div className="passport-offer-name">GUEST · JIYOON</div><div className="passport-offer-destination">DESTINATION · CURATED BY YOU</div><Compass /></div>
+      <div className="passport-offer-card figma-passport-ticket">
+        <small>STYLE JOURNEY<br />PASSPORT</small>
+        <div className="passport-chip" aria-hidden="true"><i /><i /><i /></div>
+        <div className="passport-offer-route"><b>SEO</b><FlightLine /><b>YOU</b></div>
+        <div className="passport-offer-name">GUEST · JIYOON</div>
+        <div className="passport-offer-destination">DESTINATION · CURATED BY YOU</div>
+        <span className="passport-offer-serial">NO. 2026–S1 · PRIVATE</span>
+        <Compass />
+      </div>
       <div className="passport-offer-actions"><button className="figma-choice primary" onClick={onIssue}>네, 발급해주세요.</button><button className="figma-choice" onClick={onBack}>아니요, 조금 더 둘러볼래요.</button></div>
     </div>
   );
@@ -653,6 +661,7 @@ function Boarding({ stampCount, onBack, onContinue }: { stampCount: number; onBa
       <h1>Your Private Boarding is ready.</h1>
       <div className="ticket figma-boarding-pass">
         <div className="ticket-top"><span>PRIVATE BOARDING PASS</span><span>GATE S1</span></div>
+        <div className="ticket-route"><b>SEO</b><FlightLine /><b>S1</b></div>
         <div className="boarding-pass-copy"><strong>GUEST · JIYOON</strong><span>DEPARTURE · MCM SEOUL</span><span>MOOD SIGNAL · AFTERDARK / MOVEMENT</span></div>
         <div className="boarding-stamp">READY TO<br />BOARD</div>
         <div className="boarding-qr"><QrCode /><Plane /><small>SCAN TO OPEN<br />YOUR PASSPORT</small></div>
@@ -818,11 +827,11 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
 }
 
 function GuideCharacter() {
-  return <Image className="guide-character" src="/images/amy-guide.png" alt="" width={152} height={190} loading="eager" aria-hidden="true" />;
+  return <Image className="guide-character" src="/images/amy-guide-v2.png" alt="" width={128} height={192} loading="eager" aria-hidden="true" />;
 }
 
 function FlightLine() {
-  return <span className="flight-line" aria-hidden="true"><i /><b>✦</b><i /></span>;
+  return <span className="flight-line" aria-hidden="true"><i /><b><Plane /></b><i /></span>;
 }
 
 function guideCopy(questionCode: string, spotName: string) {

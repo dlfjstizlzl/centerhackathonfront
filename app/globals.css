@@ -885,3 +885,86 @@ body { font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
 
 /* The browser and OS render the real device status bar. */
 .screen { padding-top: max(12px, env(safe-area-inset-top, 0px)); }
+
+/* Feedback pass: dynamic viewport, richer travel cards, voice dock, and plane progress. */
+html, body { width: 100%; min-height: 100%; }
+body { min-height: 100svh; overflow-x: hidden; }
+.experience-shell { min-height: 100svh; height: 100dvh; }
+.mobile-app { min-height: 100svh; height: 100dvh; }
+.screen { min-height: 0; padding-bottom: max(18px, env(safe-area-inset-bottom, 0px)); }
+
+.flight-line { gap: 3px; }
+.flight-line b { width: 20px; height: 20px; padding: 0; display: grid; place-items: center; transform: rotate(7deg); }
+.flight-line b svg { width: 15px; height: 15px; stroke-width: 1.45; }
+
+.passport-chip { position: absolute; z-index: 2; left: 20px; top: 61px; width: 34px !important; height: 25px; padding: 4px !important; border: 1px solid rgba(217,183,127,.55) !important; border-radius: 5px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: linear-gradient(145deg,#b99155,#806234); }
+.passport-chip i { border-right: 1px solid rgba(41,31,24,.45); }
+.passport-chip i:last-child { border: 0; }
+.passport-route { position: absolute; z-index: 2; left: 68px; right: 20px; top: 63px; width: auto !important; padding: 0 !important; border: 0 !important; display: flex; align-items: center; gap: 7px; }
+.passport-route b { color: #eadbc6; font-size: 10px; font-weight: 500; letter-spacing: .08em; }
+.passport-route .flight-line { min-width: 54px; }
+.passport-number { position: absolute; z-index: 2; right: 20px; bottom: 17px; color: rgba(231,214,190,.46); font-size: 7px; letter-spacing: .12em; }
+
+.voice-answer { width: calc(100% - 30px); min-height: 62px; margin: 22px 15px 0; padding: 8px 9px 8px 16px; border-radius: 14px; text-align: left; cursor: pointer; }
+.voice-copy { min-width: 0; display: grid; gap: 3px; }
+.voice-copy strong { color: #c39a64; font-size: 9px; font-weight: 600; letter-spacing: .11em; }
+.voice-copy small { color: #b9b0a8; font-size: 11px; line-height: 16px; white-space: normal; }
+.voice-icon { width: 44px; height: 44px; flex: 0 0 44px; border-radius: 12px; background: linear-gradient(145deg,#5a493b,#372d26); color: #fff; display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba(211,169,111,.18); }
+.voice-answer .voice-icon svg { width: 19px; height: 19px; padding: 0; border-radius: 0; background: transparent; }
+
+.passport-offer-card .passport-chip { top: 66px; }
+.passport-offer-route { position: absolute; z-index: 2; left: 69px; right: 22px; top: 69px; width: auto !important; padding: 0 !important; border: 0 !important; display: flex; align-items: center; gap: 7px; }
+.passport-offer-route b { color: #eadbc6; font-size: 10px; font-weight: 500; }
+.passport-offer-route .flight-line { min-width: 48px; }
+.passport-offer-serial { position: absolute; z-index: 2; left: 20px; bottom: 13px; color: rgba(230,210,182,.46) !important; font-size: 7px !important; letter-spacing: .12em; }
+.figma-passport-ticket::before, .figma-passport-ticket::after { z-index: 3; }
+.ticket-route { position: absolute; left: 20px; right: 112px; top: 53px; display: flex; align-items: center; gap: 7px; }
+.ticket-route b { color: #e9d3b5; font-size: 11px; font-weight: 500; }
+.ticket-route .flight-line { min-width: 45px; }
+
+.map-screen { display: flex; flex-direction: column; overflow-y: auto; }
+.map-screen .app-header, .map-guide { flex: 0 0 auto; }
+.map-sheet { position: relative; inset: auto; flex: 1 0 auto; min-height: 500px; overflow: visible; }
+.map-boarding { position: sticky; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index: 4; box-shadow: 0 10px 22px rgba(28,22,17,.18); }
+
+.product-reason-screen { display: flex; flex-direction: column; overflow-y: auto; }
+.product-reason-screen .app-header, .product-reason-hero { flex: 0 0 auto; }
+.product-reason-sheet { position: relative; inset: auto; flex: 1 0 auto; min-height: 475px; overflow: visible; }
+.tagged-close { position: sticky; flex: 0 0 auto; bottom: max(12px, env(safe-area-inset-bottom, 0px)); margin: -68px 15px 16px; }
+
+.frame42-screen { display: flex; flex-direction: column; overflow-y: auto; }
+.frame42-cta { position: sticky; flex: 0 0 auto; bottom: max(10px, env(safe-area-inset-bottom, 0px)); width: max-content; margin: 24px auto 0; padding: 0 12px; background: var(--figma-dark); }
+.boarding-screen, .connecting-screen { overflow-y: auto; }
+.boarding-screen .boarding-connect, .connecting-screen .gate-ready { position: sticky; bottom: max(8px, env(safe-area-inset-bottom, 0px)); z-index: 5; width: max-content; margin: 24px auto 0; padding: 0 8px; background: var(--figma-paper); }
+
+@media (max-height: 780px) {
+  .welcome-copy { margin-bottom: 28px; }
+  .welcome-screen .passport-card { height: 210px; min-height: 210px; }
+  .welcome-screen .guide-bubble { height: 125px; }
+  .latest-guide-screen .ai-guide-stage { height: 180px; margin-top: 12px; padding-top: 18px; }
+  .latest-guide-screen .question-context { margin: 20px 0 18px; }
+  .latest-guide-screen .guide-question { margin-bottom: 18px; }
+  .question-choices { gap: 9px; }
+  .question-choices button { min-height: 48px; }
+  .voice-answer { margin-top: 14px; }
+  .tag-find-content { padding-top: 45px; }
+  .tag-find-visual, .tag-find-visual img { width: 170px; height: 170px; }
+  .passport-offer-guide { min-height: 165px; padding-top: 28px; }
+  .passport-offer-card { min-height: 230px; }
+  .passport-offer-actions { margin-top: 18px; gap: 9px; }
+  .boarding-screen .boarding-kicker { margin-bottom: 24px; }
+  .boarding-screen > h1 { margin-bottom: 28px; }
+  .boarding-guide { margin-top: 22px; }
+  .connecting-screen .boarding-kicker { margin-bottom: 24px; }
+  .gate-tap-card { height: 230px; margin-top: 32px; }
+}
+
+@media (max-width: 360px) {
+  .app-header { grid-template-columns: 36px 1fr 36px; }
+  .question-screen, .signal-screen, .tag-find-screen, .frame42-screen, .product-reason-screen, .passport-offer-screen, .boarding-screen, .connecting-screen { padding-left: 12px; padding-right: 12px; }
+  .ai-message { width: min(76%, 270px); }
+  .guide-character { transform: scale(.9); transform-origin: right bottom; }
+  .voice-answer { width: 100%; margin-left: 0; margin-right: 0; }
+  .passport-offer-card { min-height: 220px; }
+  .saved-coupon { padding-inline: 12px; grid-template-columns: 36px 1fr 74px; }
+}
